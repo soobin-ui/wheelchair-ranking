@@ -46,27 +46,28 @@ body.idle{cursor:none}
 .hero .lead{position:absolute;left:230px;top:30px;font-size:28px;font-weight:800;letter-spacing:.06em;background:var(--gold);color:#3a2800;padding:5px 16px;transform:skewX(-12deg)}
 .hero .meta{position:absolute;right:70px;top:30px;font-size:26px;color:var(--goldt);font-weight:600}
 .hero .meta b{font-family:'Barlow Condensed';font-size:40px;color:#fff;margin-left:10px}
-.hero .rec{position:absolute;left:222px;top:62px;font-family:'Barlow Condensed';font-style:italic;font-weight:800;font-size:210px;line-height:.86;padding:6px .1em 4px .04em;
+.hero .rec{position:absolute;left:222px;top:64px;font-family:'Barlow Condensed';font-style:italic;font-weight:800;font-size:192px;line-height:.86;padding:6px .1em 4px .04em;
   background:linear-gradient(180deg,#fff7dc 0%,#ffe08a 45%,#c9952a 55%,#ffe7a8 100%);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 4px 18px rgba(0,0,0,.35))}
-.hero .who{position:absolute;left:30px;right:80px;bottom:26px;display:flex;align-items:baseline;gap:22px;white-space:nowrap;overflow:hidden}
-.hero .nm{font-size:60px;font-weight:800;overflow:hidden;text-overflow:ellipsis;min-width:0}
-.hero .sc{font-size:36px;font-weight:600;color:var(--goldt);flex:none}
+.hero .who{position:absolute;left:30px;right:70px;bottom:20px;display:flex;align-items:baseline;gap:30px;white-space:nowrap;overflow:hidden}
+.hero .nm{font-size:84px;line-height:1.05;font-weight:900;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.hero .sc{font-size:42px;font-weight:600;color:var(--goldt);flex:none}
 .hero.empty .rec{font-size:150px;top:110px;opacity:.5}
 .hero.empty .who .nm{font-size:44px;color:var(--goldt)}
 
 /* 2~10위 */
 .list{position:absolute;left:48px;right:48px;top:712px}
-.th{display:grid;grid-template-columns:104px 250px minmax(0,1fr) 128px 212px;height:36px;font-size:24px;color:var(--dim);font-weight:600}
-.th div:nth-child(1){text-align:center}.th div:nth-child(2){padding-left:22px}.th div:nth-child(4){text-align:right;padding-right:14px}.th div:nth-child(5){text-align:right;padding-right:34px}
-.row{display:grid;grid-template-columns:104px 250px minmax(0,1fr) 128px 212px;align-items:center;height:90px;margin-bottom:8px;
+.th{display:grid;grid-template-columns:104px 262px minmax(0,1fr) 124px 206px;height:36px;font-size:24px;color:var(--dim);font-weight:600}
+.th div:nth-child(1){text-align:center}.th div:nth-child(2){padding-left:22px}.th div:nth-child(3){padding-left:24px}.th div:nth-child(4){text-align:right;padding-right:14px}.th div:nth-child(5){text-align:right;padding-right:34px}
+.row{display:grid;grid-template-columns:104px 262px minmax(0,1fr) 124px 206px;align-items:center;height:90px;margin-bottom:8px;
   clip-path:polygon(0 0,100% 0,calc(100% - 18px) 100%,0 100%);background:linear-gradient(90deg,rgba(40,70,130,.55),rgba(20,40,80,.32))}
 .row:nth-child(odd){background:linear-gradient(90deg,rgba(40,70,130,.40),rgba(20,40,80,.22))}
 .row .p{height:100%;display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed';font-style:italic;font-weight:800;font-size:56px;padding-right:8px;
   background:rgba(255,255,255,.08);clip-path:polygon(0 0,100% 0,calc(100% - 18px) 100%,0 100%)}
 .row.r2 .p{background:linear-gradient(160deg,#fff,#9fb0c4);color:#1d2836}
 .row.r3 .p{background:linear-gradient(160deg,#f5c39a,#b9662e);color:#2e1404}
-.row .nm{padding-left:22px;font-size:52px;font-weight:800;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
-.row .sc{font-size:33px;font-weight:600;color:var(--sky);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;padding-right:10px}
+.row .nm{padding:0 14px 0 22px;font-size:52px;font-weight:800;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.row .sc{font-size:33px;font-weight:600;color:var(--sky);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;padding:0 10px 0 22px;border-left:2px solid rgba(156,200,255,.28);line-height:1.6}
+.row .nm.long{font-size:40px}
 .row .gap{text-align:right;padding-right:14px;font-family:'Barlow Condensed';font-weight:700;font-size:40px;color:#b9c8de;font-variant-numeric:tabular-nums}
 .row .rc{text-align:right;padding-right:40px;line-height:1}
 .row .rc b{display:block;font-family:'Barlow Condensed';font-style:italic;font-weight:800;font-size:74px;line-height:1;padding:4px .08em 4px 0}
@@ -212,7 +213,7 @@ function render(animate, override) {
   for (let i = 1; i < 10; i++) {
     const r = list[i], cls = 'row r' + (i + 1) + (r ? '' : ' blank') + (r && hitKey && WR.personKey(r) === hitKey ? ' hit' : '');
     const d = r ? r.sec - f.sec : 0;
-    rows += r ? `<div class="${cls}" style="--i:${i - 1}"><div class="p">${i + 1}</div><div class="nm">${esc(r.nick)}</div><div class="sc">${esc(r.org)}</div>
+    rows += r ? `<div class="${cls}" style="--i:${i - 1}"><div class="p">${i + 1}</div><div class="nm${[...r.nick].length > 4 ? ' long' : ''}">${esc(r.nick)}</div><div class="sc">${esc(r.org)}</div>
       <div class="gap">+${Math.floor(d / 60)}:${WR.pad(d % 60)}</div><div class="rc"><b>${WR.fmt(r.sec)}</b></div></div>`
       : `<div class="${cls}" style="--i:${i - 1}"><div class="p">${i + 1}</div><div class="nm">도전자를 기다리는 중</div><div></div><div></div><div class="rc"><b>--:--</b></div></div>`;
   }
