@@ -31,6 +31,8 @@ main{flex:1;min-height:0;width:100%;max-width:1700px;margin:0 auto;padding:1rem 
 .f>label{font-size:1.2rem;font-weight:800;text-align:right;color:color-mix(in srgb,var(--c) 70%,#000);line-height:1.15}
 .f>label small{display:block;font-size:.75rem;font-weight:600;opacity:.8}
 input{font:inherit;width:100%;height:3.1rem;border:2px solid color-mix(in srgb,var(--c,#8899aa) 35%,#fff);border-radius:.6rem;padding:0 1rem;font-size:1.45rem;font-weight:700;background:#fff;color:var(--ink)}
+input::placeholder{color:#c3cad4;font-weight:400;opacity:1}
+.time input::placeholder{color:#d5dae1}
 input:focus{outline:none;border-color:var(--c);box-shadow:0 0 0 .25rem color-mix(in srgb,var(--c) 18%,transparent)}
 .time{display:flex;align-items:center;gap:.6rem}
 .time input{width:6.5rem;height:3.4rem;text-align:center;font-family:'Barlow Condensed';font-size:2.3rem;padding:0}
@@ -98,7 +100,7 @@ details{margin-top:.5rem}summary{cursor:pointer;font-weight:700;color:var(--dim)
       <div class="body">
       <div class="f"><label for="n1">닉네임</label><input id="n1" name="nick" maxlength="12" placeholder="예) 질주본능"></div>
       <div class="f"><label for="o1">소속<small>학교·단체</small></label><input id="o1" name="org" maxlength="16" list="orgs" placeholder="예) 한빛중학교"></div>
-      <div class="f"><label for="m1">기록<small>게임 화면 보고</small></label><div class="time"><input id="m1" name="min" inputmode="numeric" maxlength="2" placeholder="01"><em>분</em><b>:</b><input id="s1" name="sec" inputmode="numeric" maxlength="2" placeholder="32"><em>초</em></div></div>
+      <div class="f"><label for="m1">기록<small>게임 화면 보고</small></label><div class="time"><input id="m1" name="min" inputmode="numeric" maxlength="2" placeholder="00"><em>분</em><b>:</b><input id="s1" name="sec" inputmode="numeric" maxlength="2" placeholder="00"><em>초</em></div></div>
       <div class="pre" id="p1">기록을 넣으면 순위를 미리 보여줘요</div>
       <button class="go" type="submit">랭킹보드에 올리기 (Enter)</button>
       </div>
@@ -108,7 +110,7 @@ details{margin-top:.5rem}summary{cursor:pointer;font-weight:700;color:var(--dim)
       <div class="body">
       <div class="f"><label for="n2">닉네임</label><input id="n2" name="nick" maxlength="12" placeholder="예) 바람돌이"></div>
       <div class="f"><label for="o2">소속<small>학교·단체</small></label><input id="o2" name="org" maxlength="16" list="orgs" placeholder="예) 새솔초등학교"></div>
-      <div class="f"><label for="m2">기록<small>게임 화면 보고</small></label><div class="time"><input id="m2" name="min" inputmode="numeric" maxlength="2" placeholder="01"><em>분</em><b>:</b><input id="s2" name="sec" inputmode="numeric" maxlength="2" placeholder="34"><em>초</em></div></div>
+      <div class="f"><label for="m2">기록<small>게임 화면 보고</small></label><div class="time"><input id="m2" name="min" inputmode="numeric" maxlength="2" placeholder="00"><em>분</em><b>:</b><input id="s2" name="sec" inputmode="numeric" maxlength="2" placeholder="00"><em>초</em></div></div>
       <div class="pre" id="p2">기록을 넣으면 순위를 미리 보여줘요</div>
       <button class="go" type="submit">랭킹보드에 올리기 (Enter)</button>
       </div>
