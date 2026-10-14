@@ -170,7 +170,7 @@ footer .r{margin-left:auto;font-weight:600;font-size:28px}
 </style></head>
 <body>
 <div id="stage"><div id="world">
-  <div class="top"><span class="t1">WHEELCHAIR RACING</span><span class="when"><span id="date"></span><b id="clock" class="num"></b></span></div>
+  <div class="top"><span class="t1">WHEELCHAIR RACING</span></div>
   <div class="t2">RANKING BOARD</div>
   <div class="tabs"><div class="tab" data-p="today"><span>오늘의 순위</span></div><div class="tab" data-p="total"><span>누적 순위<small>전체 기간</small></span></div></div>
   <div class="prog" id="prog"></div>
@@ -329,9 +329,6 @@ function tick(now) {
       $('prog').style.width = Math.min(k, 1) * 984 + 'px';
     } else $('prog').style.width = '0';
   }
-  const d = new Date();
-  $('clock').textContent = WR.pad(d.getHours()) + ':' + WR.pad(d.getMinutes());
-  $('date').textContent = WR.dayLabel(Date.now());
   requestAnimationFrame(tick);
 }
 // 레인 칸만 주기적으로 갱신(날짜가 바뀌면 오늘 기록이 비워짐)
