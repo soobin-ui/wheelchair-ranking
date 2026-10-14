@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>휠체어 레이싱 기록 입력</title>
+<link rel="stylesheet" href="fonts/fonts.css">
+<style>
+:root{--bg:#eef1f5;--card:#fff;--ink:#141a22;--dim:#6b7686;--line:#d7dde5;--blue:#2c6ae0;--l1:#2c6ae0;--l2:#e0662c;--red:#c0392b;--ok:#1f9d55}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Pretendard,'Malgun Gothic',sans-serif;background:var(--bg);color:var(--ink);font-size:16px}
+.num{font-family:'Barlow Condensed',sans-serif;font-variant-numeric:tabular-nums}
+header{background:#141a22;color:#fff;display:flex;flex-wrap:wrap;align-items:center;gap:12px 20px;padding:12px 24px}
+header h1{font-size:20px;font-weight:800}
+header .info{color:#9aa5b2;font-size:15px}
+header .sp{margin-left:auto}
+button{font:inherit;cursor:pointer;border:0;border-radius:8px;padding:9px 14px;font-weight:700}
+.b-blue{background:var(--blue);color:#fff}.b-line{background:transparent;color:inherit;box-shadow:inset 0 0 0 1.5px currentColor}
+.b-dark{background:#2a3442;color:#fff}.b-dark.on{background:#9cc8ff;color:#06132a}
+.seg{display:inline-flex;gap:4px;align-items:center}
+main{padding:20px 24px;display:grid;gap:20px}
+.lanes{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.lane{background:var(--tint);border-radius:14px;padding:0 22px 22px;border:3px solid var(--c);overflow:hidden}
+.lane h2{margin:0 -22px 16px;padding:10px 22px;background:var(--c);color:#fff;font-size:26px;font-weight:800;display:flex;align-items:center;gap:16px}
+.lane h2 .no{font-family:'Barlow Condensed';font-size:64px;line-height:1;font-weight:800;width:72px;height:72px;border-radius:50%;background:#fff;color:var(--c);display:flex;align-items:center;justify-content:center}
+.lane h2 small{margin-left:auto;font-size:18px;font-weight:700;opacity:.9}
+.lane input{border-color:color-mix(in srgb,var(--c) 35%,#fff)}
+.lane label{color:color-mix(in srgb,var(--c) 70%,#000)}
+.f{margin-bottom:12px}
+label{display:block;font-size:14px;font-weight:700;color:#4a5563;margin-bottom:5px}
+input{font:inherit;width:100%;height:52px;border:2px solid var(--line);border-radius:10px;padding:0 14px;font-size:22px;font-weight:600;background:#fff;color:var(--ink)}
+input:focus{outline:none;border-color:var(--c);box-shadow:0 0 0 4px color-mix(in srgb,var(--c) 18%,transparent)}
+.time{display:flex;align-items:center;gap:10px}
+.time input{width:110px;text-align:center;font-family:'Barlow Condensed';font-size:40px;font-weight:700;height:64px}
+.time em{font-style:normal;font-size:17px;color:var(--dim);font-weight:700}
+.time b{font-size:40px;font-family:'Barlow Condensed'}
+.pre{margin:12px 0;min-height:44px;border-radius:10px;padding:10px 14px;font-size:17px;font-weight:600;background:#f2f5f9;color:#33405a}
+.pre.err{background:#fdecea;color:var(--red)}.pre.ok{background:#e7f6ed;color:var(--ok)}
+.go{width:100%;height:62px;font-size:22px;background:var(--c);color:#fff;border-radius:12px}
+.card{background:var(--card);border-radius:14px;padding:18px 22px}
+.card h3{font-size:17px;font-weight:800;margin-bottom:10px;display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.card h3 .sp{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap}
+.tw{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:16px}
+th{font-size:13px;color:var(--dim);text-align:left;font-weight:700;padding:6px 8px;border-bottom:1px solid var(--line)}
+td{padding:8px;border-bottom:1px solid #edf0f3;white-space:nowrap}
+td.t{font-family:'Barlow Condensed';font-size:24px;font-weight:700}
+td .lane-tag{display:inline-block;color:#fff;border-radius:5px;padding:1px 8px;font-size:13px;font-weight:800}
+td button{padding:5px 10px;font-size:14px}
+.del{color:var(--red);background:#fdecea}.edit{background:#eef2f8;color:#33405a}
+.cols{display:grid;grid-template-columns:2fr 1fr;gap:20px}
+.mini{font-size:15px;color:var(--dim);line-height:1.6}
+.mini b{color:var(--ink)}
+details{margin-top:8px}summary{cursor:pointer;font-weight:700;color:var(--dim)}
+.danger{margin-top:10px;display:flex;flex-wrap:wrap;gap:8px}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#141a22;color:#fff;padding:12px 20px;border-radius:10px;font-weight:700;opacity:0;transition:opacity .2s;pointer-events:none}
+.toast.on{opacity:1}
+@media (max-width:900px){.lanes,.cols{grid-template-columns:1fr}}
+</style></head>
+<body>
+<header>
+  <h1>휠체어 레이싱 · 기록 입력</h1>
+  <span class="info" id="info"></span>
+  <span class="sp"></span>
+  <span class="seg">보드 화면
+    <button class="b-dark" data-page="auto" type="button">자동 전환</button>
+    <button class="b-dark" data-page="today" type="button">오늘 순위 고정</button>
+    <button class="b-dark" data-page="total" type="button">누적 순위 고정</button>
+  </span>
+  <button class="b-blue" id="openBoard" type="button">랭킹보드 창 열기</button>
+</header>
+<main>
+  <section class="lanes">
+    <form class="lane" id="lane1" style="--c:var(--l1);--tint:#e6eeff" data-lane="1" autocomplete="off">
+      <h2><span class="no">1</span>1번 휠체어 <small>◀ 보드 왼쪽 TV</small></h2>
+      <div class="f"><label for="n1">닉네임</label><input id="n1" name="nick" maxlength="12" placeholder="예) 질주본능"></div>
+      <div class="f"><label for="o1">소속 (학교·단체)</label><input id="o1" name="org" maxlength="16" list="orgs" placeholder="예) 한빛중학교"></div>
+      <label>완주 기록 (게임 화면을 보고 입력)</label>
+      <div class="time"><input id="m1" name="min" inputmode="numeric" maxlength="2" placeholder="01"><em>분</em><b>:</b><input id="s1" name="sec" inputmode="numeric" maxlength="2" placeholder="32"><em>초</em></div>
+      <div class="pre" id="p1">기록을 넣으면 순위를 미리 보여줘요</div>
+      <button class="go" type="submit">랭킹보드에 올리기 (Enter)</button>
+    </form>
+    <form class="lane" id="lane2" style="--c:var(--l2);--tint:#fff0e6" data-lane="2" autocomplete="off">
+      <h2><span class="no">2</span>2번 휠체어 <small>보드 오른쪽 TV ▶</small></h2>
+      <div class="f"><label for="n2">닉네임</label><input id="n2" name="nick" maxlength="12" placeholder="예) 바람돌이"></div>
+      <div class="f"><label for="o2">소속 (학교·단체)</label><input id="o2" name="org" maxlength="16" list="orgs" placeholder="예) 새솔초등학교"></div>
+      <label>완주 기록 (게임 화면을 보고 입력)</label>
+      <div class="time"><input id="m2" name="min" inputmode="numeric" maxlength="2" placeholder="01"><em>분</em><b>:</b><input id="s2" name="sec" inputmode="numeric" maxlength="2" placeholder="34"><em>초</em></div>
+      <div class="pre" id="p2">기록을 넣으면 순위를 미리 보여줘요</div>
+      <button class="go" type="submit">랭킹보드에 올리기 (Enter)</button>
+    </form>
+  </section>
+  <datalist id="orgs"></datalist>
+
+  <section class="cols">
+    <div class="card">
+      <h3>입력한 기록 <span class="mini" id="cnt"></span>
+        <span class="sp"><button class="b-line" id="showAll" type="button">오늘만 보기</button></span></h3>
+      <div class="tw"><table><thead><tr><th>시각</th><th>휠체어</th><th>닉네임</th><th>소속</th><th>기록</th><th>오늘 순위</th><th></th></tr></thead><tbody id="tb"></tbody></table></div>
+    </div>
+    <div class="card">
+      <h3>운영</h3>
+      <div class="mini">
+        <p>자동 전환 간격 <input id="rot" class="num" style="width:70px;height:36px;font-size:18px;display:inline-block" inputmode="numeric">초</p>
+        <p style="margin-top:10px">· 같은 <b>닉네임+소속</b>은 한 사람으로 보고 가장 빠른 기록만 순위에 올라가요.<br>
+        · 같은 기록이면 <b>먼저 세운 사람</b>이 위예요.<br>
+        · 기록은 이 노트북 브라우저에만 저장돼요. 하루 끝나면 <b>백업 저장</b>을 눌러주세요.</p>
+      </div>
+      <div class="danger">
+        <button class="b-blue" id="backup" type="button">백업 저장 (JSON)</button>
+        <button class="b-line" id="csv" type="button">엑셀용 CSV 저장</button>
+        <label class="b-line" style="display:inline-block;padding:9px 14px;border-radius:8px;cursor:pointer;margin:0;font-size:16px;color:var(--ink)">백업 불러오기<input type="file" id="restore" accept=".json" hidden></label>
+      </div>
+      <details><summary>테스트 · 초기화</summary>
+        <div class="danger">
+          <button class="b-line" id="sample" type="button">예시 기록 넣기</button>
+          <button class="b-line" id="wipe" type="button" style="color:var(--red)">전체 기록 삭제</button>
+        </div>
+      </details>
+    </div>
+  </section>
+</main>
+<div class="toast" id="toast"></div>
+<script src="common.js"></script>
+<script>
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+let onlyToday = true, editId = null;
+const toast = t => { const e = $('toast'); e.textContent = t; e.classList.add('on'); clearTimeout(e._t); e._t = setTimeout(() => e.classList.remove('on'), 2200); };
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+
+function readForm(f) {
+  const nick = f.nick.value.trim(), org = f.org.value.trim();
+  const mi = f.min.value.trim() === '' ? 0 : +f.min.value, se = f.sec.value.trim() === '' ? NaN : +f.sec.value;
+  if (!nick) return { err: '닉네임을 넣어주세요' };
+  if (WR.isBad(nick) || WR.isBad(org)) return { err: '쓸 수 없는 말이 들어 있어요. 닉네임을 바꿔주세요' };
+  if (!Number.isInteger(mi) || mi < 0 || mi > 59) return { err: '분은 0~59 숫자로 넣어주세요' };
+  if (!Number.isInteger(se) || se < 0 || se > 59) return { err: '초는 0~59 숫자로 넣어주세요' };
+  if (mi * 60 + se === 0) return { err: '기록이 0초예요. 다시 확인해주세요' };
+  return { nick, org, sec: mi * 60 + se };
+}
+function preview(f) {
+  const p = $('p' + f.dataset.lane), v = readForm(f);
+  if (v.err || !f.sec.value) { p.className = 'pre'; p.textContent = f.sec.value && v.err ? v.err : '기록을 넣으면 순위를 미리 보여줘요'; if (f.sec.value && v.err) p.className = 'pre err'; return; }
+  const rs = WR.load().filter(r => r.id !== editId), tmp = { id: '_', lane: +f.dataset.lane, nick: v.nick, org: v.org, sec: v.sec, ts: Date.now() };
+  const tl = WR.rank(WR.todayRecs(rs.concat(tmp))), pl = WR.placeOf(tl, tmp), b = tl[pl - 1];
+  p.className = 'pre';
+  p.innerHTML = `${WR.fmt(v.sec)} → 오늘 <b>${pl}위</b>` + (b.id !== '_' ? ` (이 사람 오늘 최고 ${WR.fmt(b.sec)} 유지)` : pl === 1 ? ' · <b>새 1위!</b>' : ` · 1위까지 ${v.sec - tl[0].sec}초`);
+}
+function submit(f) {
+  const v = readForm(f), p = $('p' + f.dataset.lane);
+  if (v.err) { p.className = 'pre err'; p.textContent = v.err; return; }
+  let rs = WR.load();
+  if (editId) {
+    const r = rs.find(x => x.id === editId);
+    if (r) Object.assign(r, { nick: v.nick, org: v.org, sec: v.sec, lane: +f.dataset.lane });
+    editId = null; WR.save(rs); toast('기록을 고쳤어요');
+  } else {
+    const rec = { id: uid(), lane: +f.dataset.lane, nick: v.nick, org: v.org, sec: v.sec, ts: Date.now() };
+    rs.push(rec); WR.save(rs, { newId: rec.id });
+    const pl = WR.placeOf(WR.rank(WR.todayRecs(rs)), rec);
+    toast(`${f.dataset.lane}번 휠체어 · ${v.nick} ${WR.fmt(v.sec)} 올림 (오늘 ${pl}위)`);
+  }
+  f.reset(); p.className = 'pre ok'; p.textContent = '올렸어요. 다음 도전자를 입력하세요'; f.nick.focus();
+  f.querySelector('.go').textContent = '랭킹보드에 올리기 (Enter)';
+  draw();
+}
+document.querySelectorAll('form.lane').forEach(f => {
+  f.addEventListener('submit', e => { e.preventDefault(); submit(f); });
+  f.addEventListener('input', e => {
+    if (e.target.name === 'min' || e.target.name === 'sec') e.target.value = e.target.value.replace(/\D/g, '');
+    if (e.target.name === 'min' && e.target.value.length === 2) f.sec.focus();
+    preview(f);
+  });
+});
+
+function draw() {
+  const rs = WR.load(), td = WR.todayRecs(rs), tl = WR.rank(td);
+  $('info').textContent = `${WR.dayLabel(Date.now())} · 오늘 ${td.length}건 · 전체 ${rs.length}건`;
+  const show = (onlyToday ? td : rs).slice().sort((a, b) => b.ts - a.ts);
+  $('cnt').textContent = onlyToday ? `오늘 ${show.length}건` : `전체 ${show.length}건`;
+  $('showAll').textContent = onlyToday ? '전체 날짜 보기' : '오늘만 보기';
+  $('tb').innerHTML = show.map(r => {
+    const d = new Date(r.ts), best = tl.find(x => WR.personKey(x) === WR.personKey(r));
+    const pl = WR.dayKey(r.ts) === WR.today() && best && best.id === r.id ? WR.placeOf(tl, r) + '위' : '–';
+    return `<tr><td>${onlyToday ? '' : WR.dayLabel(r.ts) + ' '}${WR.pad(d.getHours())}:${WR.pad(d.getMinutes())}</td>
+      <td><span class="lane-tag" style="background:var(--l${r.lane})">${r.lane}번</span></td><td>${esc(r.nick)}</td><td>${esc(r.org)}</td>
+      <td class="t">${WR.fmt(r.sec)}</td><td>${pl}</td>
+      <td><button class="edit" data-e="${r.id}" type="button">수정</button> <button class="del" data-d="${r.id}" type="button">삭제</button></td></tr>`;
+  }).join('') || `<tr><td colspan="7" style="color:var(--dim);padding:20px 8px">아직 입력한 기록이 없어요. 위 칸에 첫 기록을 넣어보세요.</td></tr>`;
+  $('orgs').innerHTML = [...new Set(rs.map(r => r.org).filter(Boolean))].map(o => `<option value="${esc(o)}">`).join('');
+  const s = WR.settings();
+  document.querySelectorAll('[data-page]').forEach(b => b.classList.toggle('on', b.dataset.page === s.page));
+  if (document.activeElement !== $('rot')) $('rot').value = s.rotate;
+}
+$('tb').addEventListener('click', e => {
+  const d = e.target.dataset.d, ed = e.target.dataset.e;
+  if (d) {
+    const r = WR.load().find(x => x.id === d);
+    if (r && confirm(`${r.nick} ${WR.fmt(r.sec)} 기록을 지울까요?`)) { WR.save(WR.load().filter(x => x.id !== d)); toast('지웠어요'); draw(); }
+  }
+  if (ed) {
+    const r = WR.load().find(x => x.id === ed); if (!r) return;
+    const f = $('lane' + r.lane); editId = r.id;
+    f.nick.value = r.nick; f.org.value = r.org; f.min.value = WR.pad(Math.floor(r.sec / 60)); f.sec.value = WR.pad(r.sec % 60);
+    f.querySelector('.go').textContent = '고친 내용 저장'; preview(f); f.nick.focus();
+  }
+});
+$('showAll').onclick = () => { onlyToday = !onlyToday; draw(); };
+document.querySelectorAll('[data-page]').forEach(b => b.onclick = () => { const s = WR.settings(); s.page = b.dataset.page; WR.saveSettings(s); draw(); });
+$('rot').addEventListener('change', () => { const s = WR.settings(); s.rotate = Math.min(120, Math.max(5, parseInt($('rot').value) || 15)); WR.saveSettings(s); draw(); });
+$('openBoard').onclick = () => {
+  window.__boardWin = window.open('board.html', 'wr_board', 'popup,width=540,height=960');
+  toast('보드 창을 세로 TV로 옮긴 뒤 화면을 두 번 클릭하면 전체 화면이 돼요');
+};
+function download(name, text, type) {
+  const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob(['﻿' + text], { type })); a.download = name; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+}
+const stamp = () => { const d = new Date(); return `${d.getMonth() + 1}${WR.pad(d.getDate())}_${WR.pad(d.getHours())}${WR.pad(d.getMinutes())}`; };
+$('backup').onclick = () => download(`휠체어레이싱_백업_${stamp()}.json`, JSON.stringify(WR.load()), 'application/json');
+$('csv').onclick = () => {
+  const rows = [['날짜', '시각', '휠체어', '닉네임', '소속', '기록', '기록(초)']].concat(WR.load().sort((a, b) => a.ts - b.ts).map(r => {
+    const d = new Date(r.ts); return [WR.dayKey(r.ts), WR.pad(d.getHours()) + ':' + WR.pad(d.getMinutes()), r.lane + '번', r.nick, r.org, WR.fmt(r.sec), r.sec];
+  }));
+  download(`휠체어레이싱_기록_${stamp()}.csv`, rows.map(r => r.map(c => `"${String(c).replace(/"/g, '""')}"`).join(',')).join('\r\n'), 'text/csv');
+};
+$('restore').onchange = e => {
+  const file = e.target.files[0]; if (!file) return;
+  file.text().then(t => {
+    const data = JSON.parse(t.replace(/^﻿/, ''));
+    if (!Array.isArray(data)) throw 0;
+    const cur = WR.load(), ids = new Set(cur.map(r => r.id)), add = data.filter(r => r && r.id && !ids.has(r.id));
+    WR.save(cur.concat(add)); toast(`${add.length}건을 불러왔어요 (겹치는 기록은 건너뜀)`); draw();
+  }).catch(() => toast('백업 파일을 읽지 못했어요'));
+  e.target.value = '';
+};
+$('sample').onclick = () => {
+  const names = [['질주본능', '한빛중학교', 92], ['바람돌이', '새솔초등학교', 94], ['불꽃바퀴', '푸른고등학교', 95], ['스피드레이서', '한빛중학교', 97], ['달려라하니', '은하초등학교', 98], ['번개맨', '푸른고등학교', 100], ['끝까지간다', '새솔초등학교', 102], ['로켓바퀴', '한빛중학교', 104], ['거북이아님', '다온중학교', 106], ['한계돌파', '은하초등학교', 109], ['무한질주', '다온중학교', 89, 1], ['하늘을달려', '은하초등학교', 91, 2]];
+  const now = Date.now(), rs = WR.load();
+  names.forEach(([n, o, s, back], i) => rs.push({ id: uid() + i, lane: i % 2 + 1, nick: n, org: o, sec: s, ts: back ? now - back * 86400000 : now - (names.length - i) * 180000 }));
+  WR.save(rs); toast('예시 기록을 넣었어요'); draw();
+};
+$('wipe').onclick = () => { if (confirm('모든 날짜의 기록을 지울까요? 되돌릴 수 없어요. 먼저 백업 저장을 권해요.')) { WR.save([]); toast('전체 기록을 지웠어요'); draw(); } };
+WR.on(() => draw());
+setInterval(draw, 30000);
+draw(); $('n1').focus();
+</script>
+</body></html>
