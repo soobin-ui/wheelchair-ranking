@@ -4,60 +4,80 @@
 <title>휠체어 레이싱 기록 입력</title>
 <link rel="stylesheet" href="fonts/fonts.css">
 <style>
+/* 화면 크기에 따라 1rem이 커지고 작아짐: 1366×768 노트북에서 약 16px. 페이지는 스크롤 없이 한 화면, 기록 표만 안에서 스크롤 */
 :root{--bg:#eef1f5;--card:#fff;--ink:#141a22;--dim:#6b7686;--line:#d7dde5;--blue:#2c6ae0;--l1:#2c6ae0;--l2:#e0662c;--red:#c0392b;--ok:#1f9d55}
+html{font-size:clamp(10px,min(2.1vh,1.2vw),21px)}
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:Pretendard,'Malgun Gothic',sans-serif;background:var(--bg);color:var(--ink);font-size:16px}
+html,body{height:100%}
+body{font-family:Pretendard,'Malgun Gothic',sans-serif;background:var(--bg);color:var(--ink);font-size:1rem;display:flex;flex-direction:column;overflow:hidden}
 .num{font-family:'Barlow Condensed',sans-serif;font-variant-numeric:tabular-nums}
-header{background:#141a22;color:#fff;display:flex;flex-wrap:wrap;align-items:center;gap:12px 20px;padding:12px 24px}
-header h1{font-size:20px;font-weight:800}
-header .info{color:#9aa5b2;font-size:15px}
+header{flex:none;background:#141a22;color:#fff;display:flex;flex-wrap:wrap;align-items:center;gap:.5rem 1.2rem;padding:.6rem 1.5rem}
+header h1{font-size:1.25rem;font-weight:800;white-space:nowrap}
+header .info{color:#9aa5b2;font-size:.95rem;white-space:nowrap}
 header .sp{margin-left:auto}
-button{font:inherit;cursor:pointer;border:0;border-radius:8px;padding:9px 14px;font-weight:700}
+button{font:inherit;cursor:pointer;border:0;border-radius:.5rem;padding:.5rem .85rem;font-weight:700;font-size:.95rem;white-space:nowrap}
+button:focus-visible,input:focus-visible,summary:focus-visible{outline:3px solid #9cc8ff;outline-offset:2px}
 .b-blue{background:var(--blue);color:#fff}.b-line{background:transparent;color:inherit;box-shadow:inset 0 0 0 1.5px currentColor}
 .b-dark{background:#2a3442;color:#fff}.b-dark.on{background:#9cc8ff;color:#06132a}
-.seg{display:inline-flex;gap:4px;align-items:center}
-main{padding:20px 24px;display:grid;gap:20px;max-width:1500px;margin:0 auto}
-.lanes{display:grid;grid-template-columns:1fr 1fr;gap:20px}
-.lane{background:var(--tint);border-radius:14px;padding:0 22px 22px;border:3px solid var(--c);overflow:hidden}
-.lane h2{margin:0 -22px 16px;padding:10px 22px;background:var(--c);color:#fff;font-size:26px;font-weight:800;display:flex;align-items:center;gap:16px}
-.lane h2 .no{font-family:'Barlow Condensed';font-size:64px;line-height:1;font-weight:800;width:72px;height:72px;border-radius:50%;background:#fff;color:var(--c);display:flex;align-items:center;justify-content:center}
-.lane h2 small{margin-left:auto;font-size:18px;font-weight:700;opacity:.9}
-.lane input{border-color:color-mix(in srgb,var(--c) 35%,#fff)}
-.lane label{color:color-mix(in srgb,var(--c) 70%,#000)}
-.body{max-width:560px;margin:0 auto;display:grid;gap:14px}
-.f{display:grid;grid-template-columns:96px 1fr;align-items:center;gap:14px}
-.f>label{font-size:20px;font-weight:800;margin:0;text-align:right}
-.body>.pre,.body>.go{margin-left:110px;width:calc(100% - 110px)}
-.f>label small{display:block;font-size:13px;font-weight:600;opacity:.8}
-label{display:block;font-size:14px;font-weight:700;color:#4a5563;margin-bottom:5px}
-input{font:inherit;width:100%;height:60px;border:2px solid var(--line);border-radius:10px;padding:0 16px;font-size:26px;font-weight:700;background:#fff;color:var(--ink)}
-input:focus{outline:none;border-color:var(--c);box-shadow:0 0 0 4px color-mix(in srgb,var(--c) 18%,transparent)}
-.time{display:flex;align-items:center;gap:10px}
-.time input{width:120px;text-align:center;font-family:'Barlow Condensed';font-size:40px;font-weight:700;height:64px}
-.time em{font-style:normal;font-size:17px;color:var(--dim);font-weight:700}
-.time b{font-size:40px;font-family:'Barlow Condensed'}
-.pre{min-height:48px;text-align:center;font-size:19px !important;border-radius:10px;padding:10px 14px;font-size:17px;font-weight:600;background:#f2f5f9;color:#33405a}
+.seg{display:inline-flex;gap:.25rem;align-items:center;font-size:.95rem;white-space:nowrap}
+main{flex:1;min-height:0;width:100%;max-width:1700px;margin:0 auto;padding:1rem 1.25rem;display:grid;grid-template-rows:auto minmax(0,1fr);gap:1rem}
+.lanes{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.lane{background:var(--tint);border-radius:.85rem;border:3px solid var(--c);overflow:hidden;padding-bottom:1rem}
+.lane h2{padding:.45rem 1.2rem;background:var(--c);color:#fff;font-size:1.4rem;font-weight:800;display:flex;align-items:center;gap:.9rem}
+.lane h2 .no{font-family:'Barlow Condensed';font-size:2.6rem;line-height:1;font-weight:800;width:3.1rem;height:3.1rem;border-radius:50%;background:#fff;color:var(--c);display:flex;align-items:center;justify-content:center;flex:none}
+.lane h2 small{margin-left:auto;font-size:1rem;font-weight:700;opacity:.9;white-space:nowrap}
+.body{max-width:36rem;margin:.9rem auto 0;padding:0 1.2rem;display:grid;gap:.65rem}
+.f{display:grid;grid-template-columns:5.6rem minmax(0,1fr);align-items:center;gap:.9rem}
+.f>label{font-size:1.2rem;font-weight:800;text-align:right;color:color-mix(in srgb,var(--c) 70%,#000);line-height:1.15}
+.f>label small{display:block;font-size:.75rem;font-weight:600;opacity:.8}
+input{font:inherit;width:100%;height:3.1rem;border:2px solid color-mix(in srgb,var(--c,#8899aa) 35%,#fff);border-radius:.6rem;padding:0 1rem;font-size:1.45rem;font-weight:700;background:#fff;color:var(--ink)}
+input:focus{outline:none;border-color:var(--c);box-shadow:0 0 0 .25rem color-mix(in srgb,var(--c) 18%,transparent)}
+.time{display:flex;align-items:center;gap:.6rem}
+.time input{width:6.5rem;height:3.4rem;text-align:center;font-family:'Barlow Condensed';font-size:2.3rem;padding:0}
+.time em{font-style:normal;font-size:1.05rem;color:var(--dim);font-weight:700}
+.time b{font-size:2.3rem;font-family:'Barlow Condensed'}
+.pre,.go{margin-left:6.5rem}
+.pre{min-height:2.6rem;display:flex;align-items:center;justify-content:center;text-align:center;border-radius:.6rem;padding:.35rem .9rem;font-size:1.05rem;font-weight:600;background:#f2f5f9;color:#33405a}
 .pre.err{background:#fdecea;color:var(--red)}.pre.ok{background:#e7f6ed;color:var(--ok)}
-.go{width:100%;height:66px;font-size:24px;background:var(--c);color:#fff;border-radius:12px}
-.card{background:var(--card);border-radius:14px;padding:18px 22px}
-.card h3{font-size:17px;font-weight:800;margin-bottom:10px;display:flex;flex-wrap:wrap;gap:10px;align-items:center}
-.card h3 .sp{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap}
-.tw{overflow-x:auto}
-table{width:100%;border-collapse:collapse;font-size:18px}
-th{font-size:13px;color:var(--dim);text-align:left;font-weight:700;padding:6px 8px;border-bottom:1px solid var(--line)}
-td{padding:8px;border-bottom:1px solid #edf0f3;white-space:nowrap}
-td.t{font-family:'Barlow Condensed';font-size:28px;font-weight:700}
-td .lane-tag{display:inline-block;color:#fff;border-radius:5px;padding:1px 8px;font-size:13px;font-weight:800}
-td button{padding:5px 10px;font-size:14px}
+.go{height:3.4rem;font-size:1.3rem;background:var(--c);color:#fff;border-radius:.75rem}
+.cols{display:grid;grid-template-columns:2fr 1fr;gap:1rem;min-height:0}
+.card{background:var(--card);border:3px solid #3a4658;border-radius:.85rem;padding:0 1.3rem .9rem;min-height:0;display:flex;flex-direction:column;overflow:hidden}
+.card h3{flex:none;font-size:1.15rem;font-weight:800;margin:0 -1.3rem .5rem;padding:.5rem 1.3rem;background:#3a4658;color:#fff;min-height:2.9rem;display:flex;flex-wrap:wrap;gap:.6rem;align-items:center}
+.card h3 .cnt{color:#c9d3df}
+.card h3 .b-line{color:#fff}
+.card h3 .sp{margin-left:auto;display:flex;gap:.5rem;flex-wrap:wrap}
+.tw{flex:1;min-height:0;overflow:auto}
+table{width:100%;border-collapse:collapse;font-size:1.1rem}
+th{position:sticky;top:0;background:var(--card);font-size:.8rem;color:var(--dim);text-align:left;font-weight:700;padding:.35rem .5rem;border-bottom:1px solid var(--line)}
+td{padding:.35rem .5rem;border-bottom:1px solid #edf0f3;white-space:nowrap}
+td.t{font-family:'Barlow Condensed';font-size:1.6rem;font-weight:700;line-height:1.1}
+td.empty{color:var(--dim);padding:1.2rem .5rem;white-space:normal}
+.lane-tag{display:inline-block;color:#fff;border-radius:.3rem;padding:.05rem .5rem;font-size:.8rem;font-weight:800}
+.lane-tag.l1{background:var(--l1)}.lane-tag.l2{background:var(--l2)}
+td button{padding:.3rem .6rem;font-size:.85rem}
 .del{color:var(--red);background:#fdecea}.edit{background:#eef2f8;color:#33405a}
-.cols{display:grid;grid-template-columns:2fr 1fr;gap:20px}
-.mini{font-size:15px;color:var(--dim);line-height:1.6}
+.ops{overflow:auto}
+.mini{font-size:.9rem;color:var(--dim);line-height:1.55}
 .mini b{color:var(--ink)}
-details{margin-top:8px}summary{cursor:pointer;font-weight:700;color:var(--dim)}
-.danger{margin-top:10px;display:flex;flex-wrap:wrap;gap:8px}
-.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#141a22;color:#fff;padding:12px 20px;border-radius:10px;font-weight:700;opacity:0;transition:opacity .2s;pointer-events:none}
+.mini p+p{margin-top:.5rem}
+.rot{display:inline-block;width:4.2rem;height:2.2rem;font-size:1.15rem;padding:0 .5rem;text-align:center;--c:var(--blue)}
+.file{display:inline-block;padding:.5rem .85rem;border-radius:.5rem;cursor:pointer;font-size:.95rem;font-weight:700;color:var(--ink)}
+.red{color:var(--red)}
+details{margin-top:.5rem}summary{cursor:pointer;font-weight:700;color:var(--dim);font-size:.9rem}
+.danger{margin-top:.6rem;display:grid;grid-template-columns:repeat(auto-fit,minmax(7.5rem,1fr));gap:.45rem}
+.danger>*{text-align:center}
+.note{margin-top:.6rem;font-size:.8rem;line-height:1.45}
+.toast{position:fixed;left:50%;bottom:1.5rem;transform:translateX(-50%);background:#141a22;color:#fff;padding:.75rem 1.25rem;border-radius:.6rem;font-weight:700;opacity:0;transition:opacity .2s;pointer-events:none;z-index:9}
 .toast.on{opacity:1}
-@media (max-width:900px){.lanes,.cols{grid-template-columns:1fr}}
+/* 좁은 화면(태블릿 세로·휴대폰)에서는 한 줄씩 쌓고 스크롤 허용 */
+@media (max-width:760px){
+  html{font-size:14px}
+  body{overflow:auto;height:auto}
+  main{display:block}
+  .lanes,.cols{grid-template-columns:1fr}
+  .cols{margin-top:1rem}
+  .tw{max-height:60vh}
+}
 </style></head>
 <body>
 <header>
@@ -98,27 +118,23 @@ details{margin-top:8px}summary{cursor:pointer;font-weight:700;color:var(--dim)}
 
   <section class="cols">
     <div class="card">
-      <h3>입력한 기록 <span class="mini" id="cnt"></span>
+      <h3>입력한 기록 <span class="mini cnt" id="cnt"></span>
         <span class="sp"><button class="b-line" id="showAll" type="button">오늘만 보기</button></span></h3>
       <div class="tw"><table><thead><tr><th>시각</th><th>휠체어</th><th>닉네임</th><th>소속</th><th>기록</th><th>오늘 순위</th><th></th></tr></thead><tbody id="tb"></tbody></table></div>
     </div>
-    <div class="card">
+    <div class="card ops">
       <h3>운영</h3>
-      <div class="mini">
-        <p>자동 전환 간격 <input id="rot" class="num" style="width:70px;height:36px;font-size:18px;display:inline-block" inputmode="numeric">초</p>
-        <p style="margin-top:10px">· 같은 <b>닉네임+소속</b>은 한 사람으로 보고 가장 빠른 기록만 순위에 올라가요.<br>
-        · 같은 기록이면 <b>먼저 세운 사람</b>이 위예요.<br>
-        · 기록은 이 노트북 브라우저에만 저장돼요. 하루 끝나면 <b>백업 저장</b>을 눌러주세요.</p>
-      </div>
+      <p class="mini">보드 자동 전환 간격 <input id="rot" class="num rot" inputmode="numeric" aria-label="자동 전환 간격(초)">초</p>
       <div class="danger">
-        <button class="b-blue" id="backup" type="button">백업 저장 (JSON)</button>
-        <button class="b-line" id="csv" type="button">엑셀용 CSV 저장</button>
-        <label class="b-line" style="display:inline-block;padding:9px 14px;border-radius:8px;cursor:pointer;margin:0;font-size:16px;color:var(--ink)">백업 불러오기<input type="file" id="restore" accept=".json" hidden></label>
+        <button class="b-blue" id="backup" type="button">백업 저장</button>
+        <button class="b-line" id="csv" type="button">엑셀 CSV</button>
+        <label class="b-line file">백업 불러오기<input type="file" id="restore" accept=".json" hidden></label>
       </div>
+      <p class="mini note">닉네임+소속이 같으면 한 사람(최고 기록만) · 같은 기록은 먼저 세운 사람이 위 · 기록은 이 브라우저에만 저장되니 하루 끝나면 <b>백업 저장</b></p>
       <details><summary>테스트 · 초기화</summary>
         <div class="danger">
           <button class="b-line" id="sample" type="button">예시 기록 넣기</button>
-          <button class="b-line" id="wipe" type="button" style="color:var(--red)">전체 기록 삭제</button>
+          <button class="b-line red" id="wipe" type="button">전체 기록 삭제</button>
         </div>
       </details>
     </div>
@@ -188,10 +204,10 @@ function draw() {
     const d = new Date(r.ts), best = tl.find(x => WR.personKey(x) === WR.personKey(r));
     const pl = WR.dayKey(r.ts) === WR.today() && best && best.id === r.id ? WR.placeOf(tl, r) + '위' : '–';
     return `<tr><td>${onlyToday ? '' : WR.dayLabel(r.ts) + ' '}${WR.pad(d.getHours())}:${WR.pad(d.getMinutes())}</td>
-      <td><span class="lane-tag" style="background:var(--l${r.lane})">${r.lane}번</span></td><td>${esc(r.nick)}</td><td>${esc(r.org)}</td>
+      <td><span class="lane-tag l${r.lane}">${r.lane}번</span></td><td>${esc(r.nick)}</td><td>${esc(r.org)}</td>
       <td class="t">${WR.fmt(r.sec)}</td><td>${pl}</td>
       <td><button class="edit" data-e="${r.id}" type="button">수정</button> <button class="del" data-d="${r.id}" type="button">삭제</button></td></tr>`;
-  }).join('') || `<tr><td colspan="7" style="color:var(--dim);padding:20px 8px">아직 입력한 기록이 없어요. 위 칸에 첫 기록을 넣어보세요.</td></tr>`;
+  }).join('') || `<tr><td colspan="7" class="empty">아직 입력한 기록이 없어요. 위 칸에 첫 기록을 넣어보세요.</td></tr>`;
   $('orgs').innerHTML = [...new Set(rs.map(r => r.org).filter(Boolean))].map(o => `<option value="${esc(o)}">`).join('');
   const s = WR.settings();
   document.querySelectorAll('[data-page]').forEach(b => b.classList.toggle('on', b.dataset.page === s.page));
