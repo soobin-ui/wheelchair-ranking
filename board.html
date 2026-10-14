@@ -56,18 +56,18 @@ body.idle{cursor:none}
 
 /* 2~10위 */
 .list{position:absolute;left:48px;right:48px;top:712px}
-.th{display:grid;grid-template-columns:120px 1fr 300px;height:36px;font-size:24px;color:var(--dim);font-weight:600}
-.th div:last-child{text-align:right;padding-right:34px}
-.row{display:grid;grid-template-columns:120px 1fr 300px;align-items:center;height:90px;margin-bottom:8px;
+.th{display:grid;grid-template-columns:104px 250px minmax(0,1fr) 128px 212px;height:36px;font-size:24px;color:var(--dim);font-weight:600}
+.th div:nth-child(1){text-align:center}.th div:nth-child(2){padding-left:22px}.th div:nth-child(4){text-align:right;padding-right:14px}.th div:nth-child(5){text-align:right;padding-right:34px}
+.row{display:grid;grid-template-columns:104px 250px minmax(0,1fr) 128px 212px;align-items:center;height:90px;margin-bottom:8px;
   clip-path:polygon(0 0,100% 0,calc(100% - 18px) 100%,0 100%);background:linear-gradient(90deg,rgba(40,70,130,.55),rgba(20,40,80,.32))}
 .row:nth-child(odd){background:linear-gradient(90deg,rgba(40,70,130,.40),rgba(20,40,80,.22))}
 .row .p{height:100%;display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed';font-style:italic;font-weight:800;font-size:56px;padding-right:8px;
   background:rgba(255,255,255,.08);clip-path:polygon(0 0,100% 0,calc(100% - 18px) 100%,0 100%)}
 .row.r2 .p{background:linear-gradient(160deg,#fff,#9fb0c4);color:#1d2836}
 .row.r3 .p{background:linear-gradient(160deg,#f5c39a,#b9662e);color:#2e1404}
-.row .who{padding-left:24px;min-width:0}
-.row .nm{font-size:40px;font-weight:700;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.row .sc{font-size:26px;font-weight:500;color:var(--sky);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.row .nm{padding-left:22px;font-size:52px;font-weight:800;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.row .sc{font-size:33px;font-weight:600;color:var(--sky);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;padding-right:10px}
+.row .gap{text-align:right;padding-right:14px;font-family:'Barlow Condensed';font-weight:700;font-size:40px;color:#b9c8de;font-variant-numeric:tabular-nums}
 .row .rc{text-align:right;padding-right:40px;line-height:1}
 .row .rc b{display:block;font-family:'Barlow Condensed';font-style:italic;font-weight:800;font-size:74px;line-height:1;padding:4px .08em 4px 0}
 .row .rc i{font-style:normal;font-family:'Barlow Condensed';font-weight:600;font-size:26px;color:var(--dim)}
@@ -211,11 +211,12 @@ function render(animate, override) {
   let rows = '';
   for (let i = 1; i < 10; i++) {
     const r = list[i], cls = 'row r' + (i + 1) + (r ? '' : ' blank') + (r && hitKey && WR.personKey(r) === hitKey ? ' hit' : '');
-    rows += r ? `<div class="${cls}" style="--i:${i - 1}"><div class="p">${i + 1}</div><div class="who"><div class="nm">${esc(r.nick)}</div><div class="sc">${esc(r.org)}${page === 'total' ? ' · ' + WR.dayLabel(r.ts) : ''}</div></div>
-      <div class="rc"><b>${WR.fmt(r.sec)}</b></div></div>`
-      : `<div class="${cls}" style="--i:${i - 1}"><div class="p">${i + 1}</div><div class="who"><div class="nm">도전자를 기다리는 중</div></div><div class="rc"><b>--:--</b></div></div>`;
+    const d = r ? r.sec - f.sec : 0;
+    rows += r ? `<div class="${cls}" style="--i:${i - 1}"><div class="p">${i + 1}</div><div class="nm">${esc(r.nick)}</div><div class="sc">${esc(r.org)}</div>
+      <div class="gap">+${Math.floor(d / 60)}:${WR.pad(d % 60)}</div><div class="rc"><b>${WR.fmt(r.sec)}</b></div></div>`
+      : `<div class="${cls}" style="--i:${i - 1}"><div class="p">${i + 1}</div><div class="nm">도전자를 기다리는 중</div><div></div><div></div><div class="rc"><b>--:--</b></div></div>`;
   }
-  $('list').innerHTML = `<div class="th"><div style="text-align:center">순위</div><div style="padding-left:24px">닉네임 · 소속</div><div>기록</div></div>` + rows;
+  $('list').innerHTML = `<div class="th"><div>순위</div><div>닉네임</div><div>소속</div><div>1위와 차이</div><div>기록</div></div>` + rows;
   if (!animate) $('list').querySelectorAll('.row').forEach(r => r.style.animation = 'none');
   renderLanes(rs); renderFoot(rs);
 }
