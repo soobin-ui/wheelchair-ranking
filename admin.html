@@ -47,6 +47,8 @@ input:focus{outline:none;border-color:var(--c);box-shadow:0 0 0 .25rem color-mix
 .card h3{flex:none;font-size:1.15rem;font-weight:800;margin:0 -1.3rem .5rem;padding:.5rem 1.3rem;background:#3a4658;color:#fff;min-height:2.9rem;display:flex;flex-wrap:wrap;gap:.6rem;align-items:center}
 .card h3 .cnt{color:#c9d3df}
 .card h3 .b-line{color:#fff}
+.filters select,.filters input{height:2.1rem;font-size:.9rem;font-weight:600;border:0;border-radius:.4rem;padding:0 .5rem;background:#fff;color:var(--ink);font-family:inherit}
+.filters input{width:10rem;--c:var(--blue)}
 .card h3 .sp{margin-left:auto;display:flex;gap:.5rem;flex-wrap:wrap}
 .tw{flex:1;min-height:0;overflow:auto}
 table{width:100%;border-collapse:collapse;font-size:1.1rem}
@@ -121,8 +123,13 @@ details{margin-top:.5rem}summary{cursor:pointer;font-weight:700;color:var(--dim)
   <section class="cols">
     <div class="card">
       <h3>입력한 기록 <span class="mini cnt" id="cnt"></span>
-        <span class="sp"><button class="b-line" id="showAll" type="button">오늘만 보기</button></span></h3>
-      <div class="tw"><table><thead><tr><th>시각</th><th>휠체어</th><th>닉네임</th><th>소속</th><th>기록</th><th>오늘 순위</th><th></th></tr></thead><tbody id="tb"></tbody></table></div>
+        <span class="sp filters">
+          <select id="fDay" aria-label="날짜"></select>
+          <select id="fLane" aria-label="휠체어"><option value="all">휠체어 전체</option><option value="1">1번</option><option value="2">2번</option></select>
+          <select id="fSort" aria-label="정렬"><option value="new">최신순</option><option value="fast">빠른 기록순</option></select>
+          <input id="fQ" type="search" placeholder="닉네임·소속 검색" aria-label="닉네임·소속 검색">
+        </span></h3>
+      <div class="tw"><table><thead><tr><th>시각</th><th>휠체어</th><th>닉네임</th><th>소속</th><th>기록</th><th>그날 순위</th><th></th></tr></thead><tbody id="tb"></tbody></table></div>
     </div>
     <div class="card ops">
       <h3>운영</h3>
@@ -147,7 +154,8 @@ details{margin-top:.5rem}summary{cursor:pointer;font-weight:700;color:var(--dim)
 <script>
 const $ = id => document.getElementById(id);
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-let onlyToday = true, editId = null;
+let editId = null;
+const F = { day: 'today', lane: 'all', sort: 'new', q: '' };
 const toast = t => { const e = $('toast'); e.textContent = t; e.classList.add('on'); clearTimeout(e._t); e._t = setTimeout(() => e.classList.remove('on'), 2200); };
 const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
 
@@ -200,17 +208,29 @@ document.querySelectorAll('form.lane').forEach(f => {
 function draw() {
   const rs = WR.load(), td = WR.todayRecs(rs), tl = WR.rank(td);
   $('info').textContent = `${WR.dayLabel(Date.now())} · 오늘 ${td.length}건 · 전체 ${rs.length}건`;
-  const show = (onlyToday ? td : rs).slice().sort((a, b) => b.ts - a.ts);
-  $('cnt').textContent = onlyToday ? `오늘 ${show.length}건` : `전체 ${show.length}건`;
-  $('showAll').textContent = onlyToday ? '전체 날짜 보기' : '오늘만 보기';
+  // 날짜 목록(기록이 있는 날 + 오늘)
+  const days = [...new Set(rs.map(r => WR.dayKey(r.ts)).concat(WR.today()))].sort().reverse();
+  const sel = $('fDay'), keep = F.day;
+  sel.innerHTML = `<option value="all">전체 날짜 (${rs.length})</option>` + days.map(k => {
+    const n = rs.filter(r => WR.dayKey(r.ts) === k).length, ts = rs.find(r => WR.dayKey(r.ts) === k)?.ts || Date.now();
+    return `<option value="${k === WR.today() ? 'today' : k}">${k === WR.today() ? '오늘 ' : ''}${WR.dayLabel(ts)} (${n})</option>`;
+  }).join('');
+  sel.value = [...sel.options].some(o => o.value === keep) ? keep : 'today'; F.day = sel.value;
+  const dayOf = F.day === 'today' ? WR.today() : F.day, q = F.q.replace(/\s+/g, '').toLowerCase();
+  let show = rs.filter(r => (F.day === 'all' || WR.dayKey(r.ts) === dayOf) && (F.lane === 'all' || r.lane === +F.lane) &&
+    (!q || (r.nick + r.org).replace(/\s+/g, '').toLowerCase().includes(q)));
+  show.sort(F.sort === 'fast' ? (a, b) => a.sec - b.sec || a.ts - b.ts : (a, b) => b.ts - a.ts);
+  $('cnt').textContent = `${show.length}건`;
+  const dayRank = {};
+  const rankOf = r => { const k = WR.dayKey(r.ts); const l = dayRank[k] || (dayRank[k] = WR.rank(rs.filter(x => WR.dayKey(x.ts) === k)));
+    const b = l.find(x => WR.personKey(x) === WR.personKey(r)); return b && b.id === r.id ? WR.placeOf(l, r) + '위' : '–'; };
   $('tb').innerHTML = show.map(r => {
-    const d = new Date(r.ts), best = tl.find(x => WR.personKey(x) === WR.personKey(r));
-    const pl = WR.dayKey(r.ts) === WR.today() && best && best.id === r.id ? WR.placeOf(tl, r) + '위' : '–';
-    return `<tr><td>${onlyToday ? '' : WR.dayLabel(r.ts) + ' '}${WR.pad(d.getHours())}:${WR.pad(d.getMinutes())}</td>
+    const d = new Date(r.ts), pl = rankOf(r);
+    return `<tr><td>${F.day === 'all' ? WR.dayLabel(r.ts) + ' ' : ''}${WR.pad(d.getHours())}:${WR.pad(d.getMinutes())}</td>
       <td><span class="lane-tag l${r.lane}">${r.lane}번</span></td><td>${esc(r.nick)}</td><td>${esc(r.org)}</td>
       <td class="t">${WR.fmt(r.sec)}</td><td>${pl}</td>
       <td><button class="edit" data-e="${r.id}" type="button">수정</button> <button class="del" data-d="${r.id}" type="button">삭제</button></td></tr>`;
-  }).join('') || `<tr><td colspan="7" class="empty">아직 입력한 기록이 없어요. 위 칸에 첫 기록을 넣어보세요.</td></tr>`;
+  }).join('') || `<tr><td colspan="7" class="empty">${rs.length ? '조건에 맞는 기록이 없어요.' : '아직 입력한 기록이 없어요. 위 칸에 첫 기록을 넣어보세요.'}</td></tr>`;
   $('orgs').innerHTML = [...new Set(rs.map(r => r.org).filter(Boolean))].map(o => `<option value="${esc(o)}">`).join('');
   const s = WR.settings();
   document.querySelectorAll('[data-page]').forEach(b => b.classList.toggle('on', b.dataset.page === s.page));
@@ -229,7 +249,10 @@ $('tb').addEventListener('click', e => {
     f.querySelector('.go').textContent = '고친 내용 저장'; preview(f); f.nick.focus();
   }
 });
-$('showAll').onclick = () => { onlyToday = !onlyToday; draw(); };
+$('fDay').onchange = e => { F.day = e.target.value; draw(); };
+$('fLane').onchange = e => { F.lane = e.target.value; draw(); };
+$('fSort').onchange = e => { F.sort = e.target.value; draw(); };
+$('fQ').oninput = e => { F.q = e.target.value; draw(); };
 document.querySelectorAll('[data-page]').forEach(b => b.onclick = () => { const s = WR.settings(); s.page = b.dataset.page; WR.saveSettings(s); draw(); });
 $('rot').addEventListener('change', () => { const s = WR.settings(); s.rotate = Math.min(120, Math.max(5, parseInt($('rot').value) || 15)); WR.saveSettings(s); draw(); });
 $('openBoard').onclick = () => {

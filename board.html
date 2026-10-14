@@ -57,15 +57,15 @@ body.idle{cursor:none}
 .hero .lead{position:absolute;left:150px;top:32px;font-size:30px;font-weight:800;letter-spacing:.06em;background:var(--gold);color:#3a2800;padding:5px 18px;transform:skewX(-12deg)}
 .hero .meta{position:absolute;right:70px;top:30px;font-size:26px;color:var(--goldt);font-weight:600}
 .hero .meta b{font-family:'Barlow Condensed';font-size:40px;color:#fff;margin-left:10px}
-.hero .rec{position:static;flex:none;font-family:'Barlow Condensed';font-style:italic;font-weight:800;font-size:200px;line-height:.86;padding:6px .1em 4px .04em;
+.hero .rec{position:static;flex:none;font-family:'Barlow Condensed';font-style:italic;font-weight:800;font-size:166px;line-height:.86;padding:6px .1em 4px .04em;
   background:linear-gradient(180deg,#fff7dc 0%,#ffe08a 45%,#c9952a 55%,#ffe7a8 100%);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 4px 18px rgba(0,0,0,.35))}
-.hero .who{display:flex;flex-direction:column;align-items:center;text-align:center;white-space:nowrap;min-width:0;max-width:470px}
-.hero .nm{max-width:100%;font-size:112px;line-height:1.08;font-weight:900;overflow:hidden;text-overflow:ellipsis;min-width:0;letter-spacing:-.02em}
-.hero .sc{max-width:100%;font-size:44px;font-weight:700;color:var(--goldt);margin-top:6px;overflow:hidden;text-overflow:ellipsis}
+.hero .who{position:relative;display:flex;flex-direction:column;align-items:center;text-align:center;white-space:nowrap;min-width:0;max-width:470px}
+.hero .nm{max-width:100%;font-size:118px;line-height:1;font-weight:900;overflow:hidden;text-overflow:ellipsis;min-width:0;letter-spacing:-.02em}
+.hero .sc{position:absolute;left:50%;top:100%;transform:translateX(-50%);max-width:100%;font-size:42px;font-weight:700;color:var(--goldt);margin-top:2px;overflow:hidden;text-overflow:ellipsis}
 .hero.empty .rec{font-size:150px;opacity:.5}
 .hero.empty .hb{flex-direction:column-reverse;gap:10px}.hero.empty .who{max-width:none}.hero.empty .who .nm{font-size:48px;color:var(--goldt)}
 
-.hero .hb{position:absolute;left:14px;right:34px;top:96px;bottom:10px;display:flex;align-items:center;justify-content:center;gap:56px}
+.hero .hb{position:absolute;left:14px;right:34px;top:84px;bottom:40px;display:flex;align-items:center;justify-content:center;gap:56px}
 
 /* 2~10위 */
 .list{position:absolute;left:48px;right:48px;top:712px}
