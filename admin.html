@@ -143,7 +143,7 @@ details{margin-top:.5rem}summary{cursor:pointer;font-weight:700;color:var(--dim)
   </section>
 </main>
 <div class="toast" id="toast"></div>
-<script src="common.js"></script>
+<script src="common.js?v=10141328"></script>
 <script>
 const $ = id => document.getElementById(id);
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
@@ -233,7 +233,7 @@ $('showAll').onclick = () => { onlyToday = !onlyToday; draw(); };
 document.querySelectorAll('[data-page]').forEach(b => b.onclick = () => { const s = WR.settings(); s.page = b.dataset.page; WR.saveSettings(s); draw(); });
 $('rot').addEventListener('change', () => { const s = WR.settings(); s.rotate = Math.min(120, Math.max(5, parseInt($('rot').value) || 15)); WR.saveSettings(s); draw(); });
 $('openBoard').onclick = () => {
-  window.__boardWin = window.open('board.html', 'wr_board', 'popup,width=540,height=960');
+  window.__boardWin = window.open('board.html?v=' + Date.now(), 'wr_board', 'popup,width=540,height=960');
   toast('보드 창을 세로 TV로 옮긴 뒤 화면을 두 번 클릭하면 전체 화면이 돼요');
 };
 function download(name, text, type) {
