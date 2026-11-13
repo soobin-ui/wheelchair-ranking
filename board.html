@@ -193,7 +193,7 @@ footer .r{margin-left:auto;font-weight:600;font-size:28px}
   <div class="pop" id="pop"></div>
   <div id="flash"></div><div id="stamp"></div>
 </div></div>
-<script src="common.js?v=10141328"></script>
+<script src="common.js?v=11131714"></script>
 <script>
 const $ = id => document.getElementById(id);
 const stage = $('stage');
@@ -318,6 +318,7 @@ function showPop(rec) {
   renderLanes(rs, rec.lane);
 }
 function onRecords() {
+  if (busy) { const rs0 = WR.load(); const nf = rs0.filter(r => !seen.has(r.id)); if (nf.length === 1 && WR.dayKey(nf[0].ts) === WR.today()) { seen.add(nf[0].id); popQ.push(nf[0]); } else rs0.forEach(r => seen.add(r.id)); return; }
   const rs = WR.load();
   const fresh = rs.filter(r => !seen.has(r.id)).sort((a, b) => a.ts - b.ts);
   rs.forEach(r => seen.add(r.id));
