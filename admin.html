@@ -280,8 +280,12 @@ function download(name, text, type) {
 const stamp = () => { const d = new Date(); return `${d.getMonth() + 1}${WR.pad(d.getDate())}_${WR.pad(d.getHours())}${WR.pad(d.getMinutes())}`; };
 $('backup').onclick = () => download(`휠체어레이싱_백업_${stamp()}.json`, JSON.stringify(WR.load()), 'application/json');
 $('csv').onclick = () => {
-  const rows = [['날짜', '시각', '휠체어', '닉네임', '소속', '기록', '기록(초)']].concat(WR.load().sort((a, b) => a.ts - b.ts).map(r => {
-    const d = new Date(r.ts); return [WR.dayKey(r.ts), WR.pad(d.getHours()) + ':' + WR.pad(d.getMinutes()), r.lane + '번', r.nick, r.org, '="' + WR.fmt(r.sec) + '"', r.sec];
+  // 순위는 보드와 같은 규칙(같은 사람은 최고 기록만, 같은 기록은 먼저 세운 사람이 위). 그 사람의 최고 기록 줄에만 표시
+  const all = WR.load(), dayLists = {}, total = WR.rank(all);
+  const placeIn = (list, r) => { const b = list.find(x => WR.personKey(x) === WR.personKey(r)); return b && b.id === r.id ? WR.placeOf(list, r) : ''; };
+  const rows = [['날짜', '시각', '휠체어', '닉네임', '소속', '기록', '기록(초)', '그날 순위', '누적 순위']].concat(all.sort((a, b) => a.ts - b.ts).map(r => {
+    const k = WR.dayKey(r.ts), dl = dayLists[k] || (dayLists[k] = WR.rank(all.filter(x => WR.dayKey(x.ts) === k)));
+    const d = new Date(r.ts); return [k, WR.pad(d.getHours()) + ':' + WR.pad(d.getMinutes()), r.lane + '번', r.nick, r.org, '="' + WR.fmt(r.sec) + '"', r.sec, placeIn(dl, r), placeIn(total, r)];
   }));
   download(`휠체어레이싱_기록_${stamp()}.csv`, rows.map(r => r.map(c => `"${String(c).replace(/"/g, '""')}"`).join(',')).join('\r\n'), 'text/csv');
 };
