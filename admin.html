@@ -281,7 +281,7 @@ const stamp = () => { const d = new Date(); return `${d.getMonth() + 1}${WR.pad(
 $('backup').onclick = () => download(`휠체어레이싱_백업_${stamp()}.json`, JSON.stringify(WR.load()), 'application/json');
 $('csv').onclick = () => {
   const rows = [['날짜', '시각', '휠체어', '닉네임', '소속', '기록', '기록(초)']].concat(WR.load().sort((a, b) => a.ts - b.ts).map(r => {
-    const d = new Date(r.ts); return [WR.dayKey(r.ts), WR.pad(d.getHours()) + ':' + WR.pad(d.getMinutes()), r.lane + '번', r.nick, r.org, WR.fmt(r.sec), r.sec];
+    const d = new Date(r.ts); return [WR.dayKey(r.ts), WR.pad(d.getHours()) + ':' + WR.pad(d.getMinutes()), r.lane + '번', r.nick, r.org, '="' + WR.fmt(r.sec) + '"', r.sec];
   }));
   download(`휠체어레이싱_기록_${stamp()}.csv`, rows.map(r => r.map(c => `"${String(c).replace(/"/g, '""')}"`).join(',')).join('\r\n'), 'text/csv');
 };
