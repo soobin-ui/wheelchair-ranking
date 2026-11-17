@@ -36,7 +36,7 @@ input::placeholder{color:#c3cad4;font-weight:400;opacity:1}
 .time input::placeholder{color:#d5dae1}
 input:focus{outline:none;border-color:var(--c);box-shadow:0 0 0 .25rem color-mix(in srgb,var(--c) 18%,transparent)}
 .time{display:flex;align-items:center;gap:.6rem}
-.time input{width:6.5rem;height:3.4rem;text-align:center;font-family:'Barlow Condensed';font-size:2.3rem;padding:0}
+.time input{width:100%;height:3.4rem;text-align:center;font-family:'Barlow Condensed';font-size:2.4rem;padding:0;letter-spacing:.03em}
 .time em{font-style:normal;font-size:1.05rem;color:var(--dim);font-weight:700}
 .time b{font-size:2.3rem;font-family:'Barlow Condensed'}
 .pre,.go{margin-left:6.5rem}
@@ -97,6 +97,7 @@ details{margin-top:.5rem}summary{cursor:pointer;font-weight:700;color:var(--dim)
     <button class="b-dark" data-page="today" type="button">오늘 순위 고정</button>
     <button class="b-dark" data-page="total" type="button">누적 순위 고정</button>
   </span>
+  <button class="b-dark" id="fsAdmin" type="button">전체 화면</button>
   <button class="b-blue" id="openBoard" type="button">랭킹보드 창 열기</button>
 </header>
 <main>
@@ -106,7 +107,7 @@ details{margin-top:.5rem}summary{cursor:pointer;font-weight:700;color:var(--dim)
       <div class="body">
       <div class="f"><label for="n1">닉네임<small>4자까지</small></label><input id="n1" name="nick" maxlength="4" placeholder="예) 번개질주"></div>
       <div class="f"><label for="o1">소속<small>학교·단체</small></label><input id="o1" name="org" maxlength="16" list="orgs" placeholder="예) 한빛중학교"></div>
-      <div class="f"><label for="m1">기록<small>게임 화면 보고</small></label><div class="time"><input id="m1" name="min" inputmode="numeric" maxlength="2" placeholder="00"><em>분</em><b>:</b><input id="s1" name="sec" inputmode="numeric" maxlength="2" placeholder="00"><em>초</em></div></div>
+      <div class="f"><label for="t1">기록<small>게임 화면 그대로</small></label><div class="time"><input id="t1" name="time" inputmode="decimal" maxlength="10" placeholder="1:32.45"></div></div>
       <div class="pre" id="p1">기록을 넣으면 순위를 미리 보여줘요</div>
       <button class="go" type="submit">랭킹보드에 올리기 (Enter)</button>
       <button class="cancel" type="button">수정 취소 (Esc)</button>
@@ -117,7 +118,7 @@ details{margin-top:.5rem}summary{cursor:pointer;font-weight:700;color:var(--dim)
       <div class="body">
       <div class="f"><label for="n2">닉네임<small>4자까지</small></label><input id="n2" name="nick" maxlength="4" placeholder="예) 바람돌이"></div>
       <div class="f"><label for="o2">소속<small>학교·단체</small></label><input id="o2" name="org" maxlength="16" list="orgs" placeholder="예) 새솔초등학교"></div>
-      <div class="f"><label for="m2">기록<small>게임 화면 보고</small></label><div class="time"><input id="m2" name="min" inputmode="numeric" maxlength="2" placeholder="00"><em>분</em><b>:</b><input id="s2" name="sec" inputmode="numeric" maxlength="2" placeholder="00"><em>초</em></div></div>
+      <div class="f"><label for="t2">기록<small>게임 화면 그대로</small></label><div class="time"><input id="t2" name="time" inputmode="decimal" maxlength="10" placeholder="1:32.45"></div></div>
       <div class="pre" id="p2">기록을 넣으면 순위를 미리 보여줘요</div>
       <button class="go" type="submit">랭킹보드에 올리기 (Enter)</button>
       <button class="cancel" type="button">수정 취소 (Esc)</button>
@@ -156,7 +157,7 @@ details{margin-top:.5rem}summary{cursor:pointer;font-weight:700;color:var(--dim)
   </section>
 </main>
 <div class="toast" id="toast"></div>
-<script src="common.js?v=11131714"></script>
+<script src="common.js?v=11171915"></script>
 <script>
 const $ = id => document.getElementById(id);
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
@@ -167,22 +168,21 @@ const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 
 
 function readForm(f) {
   const nick = f.nick.value.trim(), org = f.org.value.trim();
-  const mi = f.min.value.trim() === '' ? 0 : +f.min.value, se = f.sec.value.trim() === '' ? NaN : +f.sec.value;
+  const tm = WR.parseTime(f.time.value);
   if (!nick) return { err: '닉네임을 넣어주세요' };
   if ([...nick].length > 4) return { err: '닉네임은 4자까지예요' };
   if (WR.isBad(nick) || WR.isBad(org)) return { err: '쓸 수 없는 말이 들어 있어요. 닉네임을 바꿔주세요' };
-  if (!Number.isInteger(mi) || mi < 0 || mi > 59) return { err: '분은 0~59 숫자로 넣어주세요' };
-  if (!Number.isInteger(se) || se < 0 || se > 59) return { err: '초는 0~59 숫자로 넣어주세요' };
-  if (mi * 60 + se === 0) return { err: '기록이 0초예요. 다시 확인해주세요' };
-  return { nick, org, sec: mi * 60 + se };
+  if (tm.err) return { err: tm.err };
+  return { nick, org, sec: tm.sec, dp: tm.dp };
 }
 function preview(f) {
   const p = $('p' + f.dataset.lane), v = readForm(f);
-  if (v.err || !f.sec.value) { p.className = 'pre'; p.textContent = f.sec.value && v.err ? v.err : '기록을 넣으면 순위를 미리 보여줘요'; if (f.sec.value && v.err) p.className = 'pre err'; return; }
-  const rs = WR.load().filter(r => r.id !== f.dataset.edit), tmp = { id: '_', lane: +f.dataset.lane, nick: v.nick, org: v.org, sec: v.sec, ts: Date.now() };
+  if (v.err || !f.time.value.trim()) { p.className = 'pre'; p.textContent = f.time.value.trim() && v.err ? v.err : '기록을 넣으면 순위를 미리 보여줘요'; if (f.time.value.trim() && v.err) p.className = 'pre err'; return; }
+  const rs = WR.load().filter(r => r.id !== f.dataset.edit), tmp = { id: '_', lane: +f.dataset.lane, nick: v.nick, org: v.org, sec: v.sec, dp: v.dp, ts: Date.now() };
+  const d = Math.max(WR.dp(), v.dp);
   const tl = WR.rank(WR.todayRecs(rs.concat(tmp))), pl = WR.placeOf(tl, tmp), b = tl[pl - 1];
   p.className = 'pre';
-  p.innerHTML = `${WR.fmt(v.sec)} → 오늘 <b>${pl}위</b>` + (b.id !== '_' ? ` (이 사람 오늘 최고 ${WR.fmt(b.sec)} 유지)` : pl === 1 ? ' · <b>새 1위!</b>' : ` · 1위까지 ${v.sec - tl[0].sec}초`);
+  p.innerHTML = `<b>${WR.fmt(v.sec, d)}</b> → 오늘 <b>${pl}위</b>` + (b.id !== '_' ? ` (이 사람 오늘 최고 ${WR.fmt(b.sec, d)} 유지)` : pl === 1 ? ' · <b>새 1위!</b>' : ` · 1위까지 ${WR.secs(v.sec - tl[0].sec, d)}`);
 }
 function submit(f) {
   const v = readForm(f), p = $('p' + f.dataset.lane);
@@ -190,13 +190,13 @@ function submit(f) {
   let rs = WR.load();
   if (f.dataset.edit) {
     const r = rs.find(x => x.id === f.dataset.edit);
-    if (r) Object.assign(r, { nick: v.nick, org: v.org, sec: v.sec, lane: +f.dataset.lane });
+    if (r) Object.assign(r, { nick: v.nick, org: v.org, sec: v.sec, dp: v.dp, lane: +f.dataset.lane });
     endEdit(f); WR.save(rs); toast('기록을 고쳤어요');
   } else {
-    const rec = { id: uid(), lane: +f.dataset.lane, nick: v.nick, org: v.org, sec: v.sec, ts: Date.now() };
+    const rec = { id: uid(), lane: +f.dataset.lane, nick: v.nick, org: v.org, sec: v.sec, dp: v.dp, ts: Date.now() };
     rs.push(rec); WR.save(rs, { newId: rec.id });
     const pl = WR.placeOf(WR.rank(WR.todayRecs(rs)), rec);
-    toast(`${f.dataset.lane}번 휠체어 · ${v.nick} ${WR.fmt(v.sec)} 올림 (오늘 ${pl}위)`);
+    toast(`${f.dataset.lane}번 휠체어 · ${v.nick} ${WR.fmt(v.sec, Math.max(WR.dp(), v.dp))} 올림 (오늘 ${pl}위)`);
   }
   f.reset(); p.className = 'pre ok'; p.textContent = '올렸어요. 다음 도전자를 입력하세요'; f.nick.focus();
   draw();
@@ -213,8 +213,7 @@ document.querySelectorAll('form.lane').forEach(f => {
   f.querySelector('.cancel').addEventListener('click', () => cancelEdit(f));
   f.addEventListener('keydown', e => { if (e.key === 'Escape' && f.dataset.edit) cancelEdit(f); });
   f.addEventListener('input', e => {
-    if (e.target.name === 'min' || e.target.name === 'sec') e.target.value = e.target.value.replace(/\D/g, '');
-    if (e.target.name === 'min' && e.target.value.length === 2) f.sec.focus();
+    if (e.target.name === 'time') e.target.value = e.target.value.replace(/[^\d:.,분초：]/g, '');
     preview(f);
   });
 });
@@ -259,7 +258,7 @@ $('tb').addEventListener('click', e => {
   if (ed) {
     const r = WR.load().find(x => x.id === ed); if (!r) return;
     const f = $('lane' + r.lane); f.dataset.edit = r.id; f.classList.add('editing');
-    f.nick.value = r.nick; f.org.value = r.org; f.min.value = WR.pad(Math.floor(r.sec / 60)); f.sec.value = WR.pad(r.sec % 60);
+    f.nick.value = r.nick; f.org.value = r.org; f.time.value = WR.fmt(r.sec, r.dp || 0);
     f.querySelector('.go').textContent = '고친 내용 저장 (Enter)'; preview(f); f.nick.focus();
   }
 });
@@ -269,6 +268,8 @@ $('fSort').onchange = e => { F.sort = e.target.value; draw(); };
 $('fQ').oninput = e => { F.q = e.target.value; draw(); };
 document.querySelectorAll('[data-page]').forEach(b => b.onclick = () => { const s = WR.settings(); s.page = b.dataset.page; WR.saveSettings(s); draw(); });
 $('rot').addEventListener('change', () => { const s = WR.settings(); s.rotate = Math.min(120, Math.max(5, parseInt($('rot').value) || 15)); WR.saveSettings(s); draw(); });
+$('fsAdmin').onclick = () => { try { document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen(); } catch (e) {} };
+document.addEventListener('fullscreenchange', () => { $('fsAdmin').textContent = document.fullscreenElement ? '전체 화면 끄기' : '전체 화면'; });
 $('openBoard').onclick = () => {
   window.__boardWin = window.open('board.html?v=' + Date.now(), 'wr_board', 'popup,width=540,height=960');
   toast(window.__boardWin ? '보드 창을 세로 TV로 옮긴 뒤 화면을 두 번 클릭하면 전체 화면이 돼요'
@@ -302,7 +303,7 @@ $('restore').onchange = e => {
 $('sample').onclick = () => {
   const names = [['질주본능', '한빛중학교', 92], ['바람돌이', '새솔초등학교', 94], ['불꽃바퀴', '푸른고등학교', 95], ['김민준', '한빛중학교', 97], ['달려라', '은하초등학교', 98], ['번개맨', '푸른고등학교', 100], ['끝까지', '새솔초등학교', 102], ['로켓바퀴', '한빛중학교', 104], ['이서연', '다온중학교', 106], ['한계돌파', '은하초등학교', 109], ['무한질주', '다온중학교', 89, 1], ['하늘질주', '은하초등학교', 91, 2]];
   const now = Date.now(), rs = WR.load();
-  names.forEach(([n, o, s, back], i) => rs.push({ id: uid() + i, lane: i % 2 + 1, nick: n, org: o, sec: s, ts: back ? now - back * 86400000 : now - (names.length - i) * 180000 }));
+  names.forEach(([n, o, s, back], i) => rs.push({ id: uid() + i, lane: i % 2 + 1, nick: n, org: o, sec: s + ((i * 37) % 100) / 100, dp: 2, ts: back ? now - back * 86400000 : now - (names.length - i) * 180000 }));
   WR.save(rs); toast('예시 기록을 넣었어요'); draw();
 };
 $('wipe').onclick = () => { if (confirm('모든 날짜의 기록을 지울까요? 되돌릴 수 없어요. 먼저 백업 저장을 권해요.')) { WR.save([]); toast('전체 기록을 지웠어요'); draw(); } };

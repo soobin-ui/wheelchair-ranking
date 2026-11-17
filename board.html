@@ -68,23 +68,26 @@ body.idle{cursor:none}
 
 .hero .hb{position:absolute;left:14px;right:34px;top:86px;bottom:56px;display:flex;align-items:center;justify-content:center;gap:36px}
 
+#fsHint{position:absolute;left:50%;top:14px;transform:translateX(-50%);z-index:20;background:rgba(61,139,255,.95);color:#fff;font-size:30px;font-weight:800;padding:12px 30px;border-radius:999px;white-space:nowrap;box-shadow:0 6px 24px rgba(0,0,0,.4)}
+#fsHint[hidden]{display:none}
+
 /* 2~10위 */
 .list{position:absolute;left:48px;right:48px;top:752px}
-.th{display:grid;grid-template-columns:100px 256px minmax(0,1fr) 122px 232px;height:36px;font-size:28px;color:var(--dim);font-weight:600}
+.th{display:grid;grid-template-columns:92px 236px minmax(0,1fr) 152px 292px;height:36px;font-size:28px;color:var(--dim);font-weight:600}
 .th>div{text-align:center}.th div:nth-child(5){padding-right:18px}
-.row{display:grid;grid-template-columns:100px 256px minmax(0,1fr) 122px 232px;align-items:center;height:86px;margin-bottom:8px;
+.row{display:grid;grid-template-columns:92px 236px minmax(0,1fr) 152px 292px;align-items:center;height:86px;margin-bottom:8px;
   clip-path:polygon(0 0,100% 0,calc(100% - 18px) 100%,0 100%);background:linear-gradient(90deg,rgba(40,70,130,.55),rgba(20,40,80,.32))}
 .row:nth-child(odd){background:linear-gradient(90deg,rgba(40,70,130,.40),rgba(20,40,80,.22))}
 .row .p{height:100%;display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed';font-style:italic;font-weight:800;font-size:64px;padding-right:8px;
   background:rgba(255,255,255,.08);clip-path:polygon(0 0,100% 0,calc(100% - 18px) 100%,0 100%)}
 .row.r2 .p{background:linear-gradient(160deg,#fff,#9fb0c4);color:#1d2836}
 .row.r3 .p{background:linear-gradient(160deg,#f5c39a,#b9662e);color:#2e1404}
-.row .nm{padding:0 12px;text-align:center;font-size:58px;font-weight:800;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
-.row .sc{text-align:center;font-size:38px;font-weight:600;color:var(--sky);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;padding:0 12px;border-left:2px solid rgba(156,200,255,.28);border-right:2px solid rgba(156,200,255,.28);line-height:1.6}
+.row .nm{padding:0 12px;text-align:center;font-size:56px;font-weight:800;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.row .sc{text-align:center;font-size:34px;font-weight:600;color:var(--sky);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;padding:0 12px;border-left:2px solid rgba(156,200,255,.28);border-right:2px solid rgba(156,200,255,.28);line-height:1.6}
 .row .nm.long{font-size:44px}
-.row .gap{text-align:center;font-family:'Barlow Condensed';font-weight:700;font-size:46px;color:#b9c8de;font-variant-numeric:tabular-nums}
+.row .gap{text-align:center;font-family:'Barlow Condensed';font-weight:700;font-size:40px;color:#b9c8de;font-variant-numeric:tabular-nums}
 .row .rc{text-align:center;padding-right:18px;line-height:1}
-.row .rc b{display:block;font-family:'Barlow Condensed';font-style:italic;font-weight:800;font-size:84px;line-height:1;padding:4px .06em}
+.row .rc b{display:block;font-family:'Barlow Condensed';font-style:italic;font-weight:800;font-size:74px;line-height:1;padding:4px .06em}
 .row .rc i{font-style:normal;font-family:'Barlow Condensed';font-weight:600;font-size:26px;color:var(--dim)}
 .row.blank{opacity:.35}.row.blank .nm{color:var(--dim)}
 .row.hit{box-shadow:inset 0 0 0 3px var(--blue);background:linear-gradient(90deg,rgba(61,139,255,.5),rgba(61,139,255,.15))}
@@ -192,9 +195,10 @@ footer .r{margin-left:auto;font-weight:600;font-size:28px}
   <section class="lanes" id="lanes"></section>
   <footer id="foot"></footer>
   <div class="pop" id="pop"></div>
+  <div id="fsHint">화면을 한 번 클릭하면 전체 화면으로 바뀌어요</div>
   <div id="flash"></div><div id="stamp"></div>
 </div></div>
-<script src="common.js?v=11131714"></script>
+<script src="common.js?v=11171915"></script>
 <script>
 const $ = id => document.getElementById(id);
 const stage = $('stage');
@@ -208,10 +212,15 @@ function fit() {
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 
 function fitHero(h) {
-  const nm = h.querySelector('.nm'); if (!nm) return;
-  nm.style.fontSize = ''; let fs = parseFloat(getComputedStyle(nm).fontSize);
+  const nm = h.querySelector('.nm'), rec = h.querySelector('.rec'), who = h.querySelector('.who'), hb = h.querySelector('.hb'); if (!nm || !hb) return;
+  nm.style.fontSize = ''; rec.style.fontSize = '';
+  let fs = parseFloat(getComputedStyle(nm).fontSize);
   while (nm.scrollWidth > nm.clientWidth + 1 && fs > 60) { fs -= 4; nm.style.fontSize = fs + 'px'; }
+  // 소수점 기록처럼 길면 기록 숫자를 줄여 닉네임과 한 줄에 들어가게
+  let rf = parseFloat(getComputedStyle(rec).fontSize); const gp = parseFloat(getComputedStyle(hb).columnGap) || 0;
+  while (who.offsetWidth + gp + rec.offsetWidth > hb.clientWidth - 8 && rf > 96) { rf -= 6; rec.style.fontSize = rf + 'px'; }
 }
+function fitWidth(el, max, min) { el.style.fontSize = ''; let f = parseFloat(getComputedStyle(el).fontSize); while (el.offsetWidth > max && f > min) { f -= 8; el.style.fontSize = f + 'px'; } }
 function heroHTML(f) {
   return `<i class="shine"></i><div class="p">1<sup>st</sup></div>
     <span class="lead">${page === 'today' ? '오늘의 1위' : '누적 1위'}</span>
@@ -233,7 +242,7 @@ function render(animate, override) {
     const r = list[i], cls = 'row r' + (i + 1) + (r ? '' : ' blank') + (r && hitKey && WR.personKey(r) === hitKey ? ' hit' : '');
     const d = r ? r.sec - f.sec : 0;
     rows += r ? `<div class="${cls}" style="--i:${i - 1}"><div class="p">${i + 1}</div><div class="nm${[...r.nick].length > 4 ? ' long' : ''}">${esc(r.nick)}</div><div class="sc">${esc(r.org)}</div>
-      <div class="gap">+${Math.floor(d / 60)}:${WR.pad(d % 60)}</div><div class="rc"><b>${WR.fmt(r.sec)}</b></div></div>`
+      <div class="gap">${WR.gap(d)}</div><div class="rc"><b>${WR.fmt(r.sec)}</b></div></div>`
       : `<div class="${cls}" style="--i:${i - 1}"><div class="p">${i + 1}</div><div class="nm">도전자를 기다리는 중</div><div></div><div></div><div class="rc"><b>--:--</b></div></div>`;
   }
   $('list').innerHTML = `<div class="th"><div>순위</div><div>닉네임</div><div>소속</div><div>1위와 차이</div><div>기록</div></div>` + rows;
@@ -280,7 +289,7 @@ function slam(rec, prevList, nowList, pA) {
       const du = document.createElement('div'); du.className = 'dust on'; world.appendChild(du);
       const st = $('stamp');
       const sub = old
-        ? (same ? `${WR.fmt(old.sec)} → ${WR.fmt(rec.sec)} · ${old.sec - rec.sec}초 단축` : `${esc(old.nick)} ${WR.fmt(old.sec)} → ${esc(rec.nick)} ${WR.fmt(rec.sec)}`)
+        ? (same ? `${WR.fmt(old.sec)} → ${WR.fmt(rec.sec)} · ${WR.secs(old.sec - rec.sec)} 단축` : `${esc(old.nick)} ${WR.fmt(old.sec)} → ${esc(rec.nick)} ${WR.fmt(rec.sec)}`)
         : `${rec.lane}번 휠체어 · ${esc(rec.nick)} · 오늘의 첫 1위`;
       st.className = 'on';
       st.innerHTML = `<div class="s1">${same ? '1위 기록 경신!' : '새로운 1위 갱신!'}</div><div class="s2">${sub}${pA === 1 && old ? ' · 누적 1위!' : ''}</div>`;
@@ -312,8 +321,9 @@ function showPop(rec) {
     <div class="rec">${WR.fmt(rec.sec)}</div>
     <div class="nm">${esc(rec.nick)}</div><div class="sc">${esc(rec.org)}</div>
     <div class="pl">${gold ? '오늘의 1위!' : isBest ? `오늘 ${pT}위` : `내 최고 기록 ${WR.fmt(best.sec)} · 오늘 ${pT}위`}</div>
-    ${isBest && pA === 1 ? `<div class="pl2">누적 1위까지 차지했어요</div>` : isBest && pT > 1 ? `<div class="pl2">오늘 1위까지 ${rec.sec - tl[0].sec}초</div>` : ''}`;
+    ${isBest && pA === 1 ? `<div class="pl2">누적 1위까지 차지했어요</div>` : isBest && pT > 1 ? `<div class="pl2">오늘 1위까지 ${WR.secs(rec.sec - tl[0].sec)}</div>` : ''}`;
   void p.offsetWidth; p.classList.add('show');
+  fitWidth(p.querySelector('.rec'), 1000, 160);
   popUntil = performance.now() + 7000;
   hitKey = WR.personKey(rec);
   renderLanes(rs, rec.lane);
@@ -356,8 +366,10 @@ function tick(now) {
 setInterval(() => { if (!$('pop').classList.contains('show')) { renderLanes(WR.load()); renderFoot(WR.load()); } }, 30000);
 
 addEventListener('resize', fit);
-document.addEventListener('dblclick', () => { try { document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen(); } catch (e) {} });
+document.addEventListener('click', () => { if (!document.fullscreenElement) try { document.documentElement.requestFullscreen().catch(() => {}); } catch (e) {} });
+const fsHint = () => document.getElementById('fsHint').hidden = !!document.fullscreenElement;
+document.addEventListener('fullscreenchange', () => { fsHint(); setTimeout(fit, 50); });
 let idleT; addEventListener('mousemove', () => { document.body.classList.remove('idle'); clearTimeout(idleT); idleT = setTimeout(() => document.body.classList.add('idle'), 2500); });
-fit(); applyPage(true); requestAnimationFrame(tick);
+fit(); fsHint(); applyPage(true); requestAnimationFrame(tick);
 </script>
 </body></html>
