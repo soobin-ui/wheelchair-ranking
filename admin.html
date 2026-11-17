@@ -107,7 +107,7 @@ details{margin-top:.5rem}summary{cursor:pointer;font-weight:700;color:var(--dim)
       <h2><span class="no">1</span>1번 휠체어 <small>◀ 보드 왼쪽 TV</small></h2>
       <div class="body">
       <div class="f"><label for="n1">닉네임<small>4자까지</small></label><input id="n1" name="nick" maxlength="4" placeholder="예) 번개질주"></div>
-      <div class="f"><label for="o1">소속<small>학교·단체</small></label><input id="o1" name="org" maxlength="16" list="orgs" placeholder="예) 한빛중학교"></div>
+      <div class="f"><label for="o1">소속<small>10자까지</small></label><input id="o1" name="org" maxlength="10" list="orgs" placeholder="예) 한빛중학교"></div>
       <div class="f"><label for="t1">기록<small>숫자만 입력</small></label><div class="time"><input id="t1" name="time" inputmode="decimal" maxlength="10" placeholder="숫자만 · 예) 12523"></div></div>
       <div class="pre" id="p1">기록을 넣으면 순위를 미리 보여줘요</div>
       <button class="go" type="submit">랭킹보드에 올리기 (Enter)</button>
@@ -118,7 +118,7 @@ details{margin-top:.5rem}summary{cursor:pointer;font-weight:700;color:var(--dim)
       <h2><span class="no">2</span>2번 휠체어 <small>보드 오른쪽 TV ▶</small></h2>
       <div class="body">
       <div class="f"><label for="n2">닉네임<small>4자까지</small></label><input id="n2" name="nick" maxlength="4" placeholder="예) 바람돌이"></div>
-      <div class="f"><label for="o2">소속<small>학교·단체</small></label><input id="o2" name="org" maxlength="16" list="orgs" placeholder="예) 새솔초등학교"></div>
+      <div class="f"><label for="o2">소속<small>10자까지</small></label><input id="o2" name="org" maxlength="10" list="orgs" placeholder="예) 새솔초등학교"></div>
       <div class="f"><label for="t2">기록<small>숫자만 입력</small></label><div class="time"><input id="t2" name="time" inputmode="decimal" maxlength="10" placeholder="숫자만 · 예) 12523"></div></div>
       <div class="pre" id="p2">기록을 넣으면 순위를 미리 보여줘요</div>
       <button class="go" type="submit">랭킹보드에 올리기 (Enter)</button>
@@ -158,7 +158,7 @@ details{margin-top:.5rem}summary{cursor:pointer;font-weight:700;color:var(--dim)
   </section>
 </main>
 <div class="toast" id="toast"></div>
-<script src="common.js?v=11171924"></script>
+<script src="common.js?v=11180855"></script>
 <script>
 const $ = id => document.getElementById(id);
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
