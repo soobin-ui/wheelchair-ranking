@@ -10,7 +10,7 @@
 html{font-size:clamp(10px,min(2.1vh,1.2vw),21px)}
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%}
-body{font-family:Pretendard,'Malgun Gothic',sans-serif;background:var(--bg);color:var(--ink);font-size:1rem;display:flex;flex-direction:column;overflow:hidden}
+body{word-break:keep-all;overflow-wrap:break-word;font-family:Pretendard,'Malgun Gothic',sans-serif;background:var(--bg);color:var(--ink);font-size:1rem;display:flex;flex-direction:column;overflow:hidden}
 .num{font-family:'Barlow Condensed',sans-serif;font-variant-numeric:tabular-nums}
 header{flex:none;background:#141a22;color:#fff;display:flex;flex-wrap:wrap;align-items:center;gap:.5rem 1.2rem;padding:.6rem 1.5rem}
 header h1{font-size:1.25rem;font-weight:800;white-space:nowrap}
@@ -33,7 +33,7 @@ main{flex:1;min-height:0;width:100%;max-width:1700px;margin:0 auto;padding:1rem 
 .f>label small{display:block;font-size:.75rem;font-weight:600;opacity:.8}
 input{font:inherit;width:100%;height:3.1rem;border:2px solid color-mix(in srgb,var(--c,#8899aa) 35%,#fff);border-radius:.6rem;padding:0 1rem;font-size:1.45rem;font-weight:700;background:#fff;color:var(--ink)}
 input::placeholder{color:#c3cad4;font-weight:400;opacity:1}
-.time input::placeholder{color:#d5dae1}
+.time input::placeholder{color:#c3cad4;font-family:Pretendard,sans-serif;font-size:1.3rem;font-weight:500;letter-spacing:0}
 input:focus{outline:none;border-color:var(--c);box-shadow:0 0 0 .25rem color-mix(in srgb,var(--c) 18%,transparent)}
 .time{display:flex;align-items:center;gap:.6rem}
 .time input{width:100%;height:3.4rem;text-align:center;font-family:'Barlow Condensed';font-size:2.4rem;padding:0;letter-spacing:.03em}
@@ -107,7 +107,7 @@ details{margin-top:.5rem}summary{cursor:pointer;font-weight:700;color:var(--dim)
       <div class="body">
       <div class="f"><label for="n1">닉네임<small>4자까지</small></label><input id="n1" name="nick" maxlength="4" placeholder="예) 번개질주"></div>
       <div class="f"><label for="o1">소속<small>학교·단체</small></label><input id="o1" name="org" maxlength="16" list="orgs" placeholder="예) 한빛중학교"></div>
-      <div class="f"><label for="t1">기록<small>게임 화면 그대로</small></label><div class="time"><input id="t1" name="time" inputmode="decimal" maxlength="10" placeholder="1:32.45"></div></div>
+      <div class="f"><label for="t1">기록<small>숫자만 입력</small></label><div class="time"><input id="t1" name="time" inputmode="decimal" maxlength="10" placeholder="숫자만 · 예) 12523"></div></div>
       <div class="pre" id="p1">기록을 넣으면 순위를 미리 보여줘요</div>
       <button class="go" type="submit">랭킹보드에 올리기 (Enter)</button>
       <button class="cancel" type="button">수정 취소 (Esc)</button>
@@ -118,7 +118,7 @@ details{margin-top:.5rem}summary{cursor:pointer;font-weight:700;color:var(--dim)
       <div class="body">
       <div class="f"><label for="n2">닉네임<small>4자까지</small></label><input id="n2" name="nick" maxlength="4" placeholder="예) 바람돌이"></div>
       <div class="f"><label for="o2">소속<small>학교·단체</small></label><input id="o2" name="org" maxlength="16" list="orgs" placeholder="예) 새솔초등학교"></div>
-      <div class="f"><label for="t2">기록<small>게임 화면 그대로</small></label><div class="time"><input id="t2" name="time" inputmode="decimal" maxlength="10" placeholder="1:32.45"></div></div>
+      <div class="f"><label for="t2">기록<small>숫자만 입력</small></label><div class="time"><input id="t2" name="time" inputmode="decimal" maxlength="10" placeholder="숫자만 · 예) 12523"></div></div>
       <div class="pre" id="p2">기록을 넣으면 순위를 미리 보여줘요</div>
       <button class="go" type="submit">랭킹보드에 올리기 (Enter)</button>
       <button class="cancel" type="button">수정 취소 (Esc)</button>
@@ -157,7 +157,7 @@ details{margin-top:.5rem}summary{cursor:pointer;font-weight:700;color:var(--dim)
   </section>
 </main>
 <div class="toast" id="toast"></div>
-<script src="common.js?v=11171915"></script>
+<script src="common.js?v=11171924"></script>
 <script>
 const $ = id => document.getElementById(id);
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));

@@ -13,11 +13,13 @@ const WR = (() => {
   const gap = (sec, d = DP) => { const t = fmt(sec, d); return '+' + (t[0] === '0' ? t.slice(1) : t); };
   // 초 단위 차이: 2.15초
   const secs = (sec, d = DP) => (Math.round(sec * 1000) / 1000).toFixed(d) + '초';
-  // 입력값 읽기: 1:32.45 / 01:32.45 / 1분32.45초 / 92.45(초) 모두 허용
+  // 입력값 읽기: 숫자만(12523 → 1:25.23, 게임 화면 숫자를 순서대로) / 1:25.23 / 1분25.23초 / 85.23(초)
   function parseTime(str) {
     let t = String(str || '').trim().replace(/\s+/g, '').replace(/[，,]/g, '.').replace(/[：;]/g, ':').replace(/분/g, ':').replace(/초$/, '');
     if (!t) return { err: '기록을 넣어주세요' };
     if (/^\d{1,2}\.\d{1,2}\.\d{1,3}$/.test(t)) t = t.replace('.', ':');   // 1.32.45 → 1:32.45
+    // 숫자만: 끝 2자리 = 소수점 아래, 그 앞 2자리 = 초, 나머지 = 분 (12523 → 1:25.23, 2523 → 0:25.23)
+    if (/^\d{3,6}$/.test(t)) t = t.slice(0, -4).padStart(1, '0') + ':' + t.slice(-4, -2).padStart(2, '0') + '.' + t.slice(-2);
     let m = t.match(/^(\d{1,2}):(\d{1,2})(?:\.(\d{1,3}))?$/), sec, dec;
     if (m) {
       if (+m[2] > 59) return { err: '초는 59까지예요. 예) 1:32.45' };

@@ -13,7 +13,7 @@ body.idle{cursor:none}
 .num{font-family:'Barlow Condensed',sans-serif;font-variant-numeric:tabular-nums}
 .chk{background:conic-gradient(#fff 25%,#000 0 50%,#fff 0 75%,#000 0) 0 0/26px 26px}
 #stage{position:absolute;left:0;top:0;width:1080px;height:1920px;transform-origin:0 0;overflow:hidden;
-  font-family:Pretendard,'Malgun Gothic',sans-serif;color:var(--ink);
+  word-break:keep-all;font-family:Pretendard,'Malgun Gothic',sans-serif;color:var(--ink);
   background:
     repeating-linear-gradient(115deg,transparent 0 160px,rgba(140,190,255,.03) 160px 167px,transparent 167px 320px),
     radial-gradient(900px 600px at 90% -5%,rgba(110,170,255,.30),transparent 70%),
@@ -198,7 +198,7 @@ footer .r{margin-left:auto;font-weight:600;font-size:28px}
   <div id="fsHint">화면을 한 번 클릭하면 전체 화면으로 바뀌어요</div>
   <div id="flash"></div><div id="stamp"></div>
 </div></div>
-<script src="common.js?v=11171915"></script>
+<script src="common.js?v=11171924"></script>
 <script>
 const $ = id => document.getElementById(id);
 const stage = $('stage');
