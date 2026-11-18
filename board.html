@@ -159,7 +159,8 @@ footer .r{margin-left:auto;font-weight:600;font-size:28px}
 @keyframes speed{0%{opacity:0;transform:translateY(-200px)}60%{opacity:1}100%{opacity:0;transform:translateY(120px)}}
 .hero.knock{animation:knock .45s cubic-bezier(.3,0,.8,.6) both}
 @keyframes knock{0%{transform:none;opacity:1}100%{transform:translateY(300px) scale(.82,.5);opacity:0}}
-#list{transition:transform .35s cubic-bezier(.2,.9,.3,1.3)}
+#list{transition:transform .35s cubic-bezier(.2,.9,.3,1.3),opacity .3s}
+#list.dim{opacity:.18}
 #list.push{transform:translateY(94px)}
 #list .row:last-child{transition:opacity .25s}
 #list.push .row:last-child{opacity:0}
@@ -231,7 +232,7 @@ function heroHTML(f) {
 }
 function render(animate, override) {
   const rs = WR.load(), list = override || (page === 'today' ? WR.rank(WR.todayRecs(rs)) : WR.rank(rs));
-  $('list').classList.remove('push');
+  $('list').classList.remove('push', 'dim');
   document.querySelectorAll('.tab').forEach(t => t.classList.toggle('on', t.dataset.p === page));
   const h = $('hero'), f = list[0];
   h.className = 'hero' + (f ? '' : ' empty');
@@ -285,8 +286,9 @@ function slam(rec, prevList, nowList, pA) {
     world.appendChild(sp); world.appendChild(card);
     setTimeout(() => {
       card.classList.add('hit');
-      if (old) hero.classList.add('knock');
+      hero.classList.add('knock');   // 이전 1위(또는 빈 칸 안내 글자)는 항상 밀어냄
       $('list').classList.toggle('push', !!old && !same);
+      $('list').classList.add('dim');  // 도장 문구가 순위표 글자와 겹쳐 보이지 않게 뒤를 어둡게
       world.classList.remove('shake'); void world.offsetWidth; world.classList.add('shake');
       const fl = $('flash'); fl.classList.remove('on'); void fl.offsetWidth; fl.classList.add('on');
       const du = document.createElement('div'); du.className = 'dust on'; world.appendChild(du);
