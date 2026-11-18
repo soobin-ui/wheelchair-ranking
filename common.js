@@ -9,8 +9,8 @@ const WR = (() => {
     const ms = Math.round(sec * 1000), m = Math.floor(ms / 60000), rest = ms - m * 60000;
     return pad(m) + ':' + pad(Math.floor(rest / 1000)) + (d > 0 ? '.' + String(rest % 1000).padStart(3, '0').slice(0, d) : '');
   };
-  // 1위와 차이: +0:02.15
-  const gap = (sec, d = DP) => { const t = fmt(sec, d); return '+' + (t[0] === '0' ? t.slice(1) : t); };
+  // 1위와 차이: 1분 안이면 +2.15, 넘으면 +1:02.15
+  const gap = (sec, d = DP) => { if (sec < 60) return '+' + (Math.round(sec * 1000) / 1000).toFixed(d); const t = fmt(sec, d); return '+' + (t[0] === '0' ? t.slice(1) : t); };
   // 초 단위 차이: 2.15초
   const secs = (sec, d = DP) => (Math.round(sec * 1000) / 1000).toFixed(d) + '초';
   // 입력값 읽기: 숫자만(12523 → 1:25.23, 게임 화면 숫자를 순서대로) / 1:25.23 / 1분25.23초 / 85.23(초)

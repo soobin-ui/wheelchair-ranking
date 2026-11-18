@@ -73,9 +73,9 @@ body.idle{cursor:none}
 
 /* 2~10위 */
 .list{position:absolute;left:48px;right:48px;top:752px}
-.th{display:grid;grid-template-columns:84px 236px minmax(0,1fr) 142px 292px;height:36px;font-size:28px;color:var(--dim);font-weight:600}
+.th{display:grid;grid-template-columns:84px 236px minmax(0,1fr) 118px 292px;height:36px;font-size:28px;color:var(--dim);font-weight:600}
 .th>div{text-align:center}.th div:nth-child(5){padding-right:18px}
-.row{display:grid;grid-template-columns:84px 236px minmax(0,1fr) 142px 292px;align-items:center;height:86px;margin-bottom:8px;
+.row{display:grid;grid-template-columns:84px 236px minmax(0,1fr) 118px 292px;align-items:center;height:86px;margin-bottom:8px;
   clip-path:polygon(0 0,100% 0,calc(100% - 18px) 100%,0 100%);background:linear-gradient(90deg,rgba(40,70,130,.55),rgba(20,40,80,.32))}
 .row:nth-child(odd){background:linear-gradient(90deg,rgba(40,70,130,.40),rgba(20,40,80,.22))}
 .row .p{height:100%;display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed';font-style:italic;font-weight:800;font-size:64px;padding-right:8px;
@@ -199,7 +199,7 @@ footer .r{margin-left:auto;font-weight:600;font-size:28px}
   <div id="fsHint">화면을 한 번 클릭하면 전체 화면으로 바뀌어요</div>
   <div id="flash"></div><div id="stamp"></div>
 </div></div>
-<script src="common.js?v=11180855"></script>
+<script src="common.js?v=11180915"></script>
 <script>
 const $ = id => document.getElementById(id);
 const stage = $('stage');
@@ -267,7 +267,7 @@ function renderLanes(rs, flashLane) {
 function renderFoot(rs) {
   const td = WR.todayRecs(rs), tl = WR.rank(td);
   $('foot').innerHTML = `<div class="f chk"></div><span>오늘 도전 <b>${td.length}</b>회</span>
-    <span class="r">${tl[0] ? `오늘 1위 <b>${WR.fmt(tl[0].sec)}</b> 를 넘어보세요` : '오늘의 첫 기록을 세워보세요'}</span>`;
+    <span class="r">${tl[0] ? `오늘 1위 기록 <b>${WR.fmt(tl[0].sec)}</b> · 지금 도전하세요` : '오늘의 첫 기록을 세워보세요'}</span>`;
 }
 
 let busy = false;
@@ -376,5 +376,7 @@ const fsHint = () => document.getElementById('fsHint').hidden = !!document.fulls
 document.addEventListener('fullscreenchange', () => { fsHint(); setTimeout(fit, 50); });
 let idleT; addEventListener('mousemove', () => { document.body.classList.remove('idle'); clearTimeout(idleT); idleT = setTimeout(() => document.body.classList.add('idle'), 2500); });
 fit(); fsHint(); applyPage(true); requestAnimationFrame(tick);
+// 글꼴이 늦게 들어오면 처음 잰 폭이 틀어지므로, 글꼴 로드 후 1위·소속 폭을 다시 맞춤
+document.fonts.ready.then(() => { fitHero($('hero')); $('list').querySelectorAll('.row .sc').forEach(e => { e.style.fontSize = ''; let f = 34; while (e.scrollWidth > e.clientWidth + 1 && f > 24) { f -= 2; e.style.fontSize = f + 'px'; } }); });
 </script>
 </body></html>
